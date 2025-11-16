@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CNIMA USA - Accordion Workshop in New Orleans. Learn from world-renowned master accordionists Jacques Mornet, Nathalie Boucheix, and more.">
+    <title>CNIMA USA - Accordion Workshop New Orleans 2026</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <a href="#" class="logo">
+                    <img src="assets/images/cnima-logo.jpg" alt="CNIMA USA" class="logo-img">
+                </a>
+                <div class="nav-links">
+                    <a href="#about">About</a>
+                    <a href="#workshop">Workshop</a>
+                    <a href="#register">Register</a>
+                    <a href="#contact">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="hero-content">
+                <img src="assets/images/cnima-logo.jpg" alt="CNIMA" class="hero-logo">
+                <h1 class="hero-title">CNIMA Accordion Workshop</h1>
+                <h2 class="hero-subtitle">New Orleans, May 2026</h2>
+                <p class="hero-description">Learn from world-renowned master accordionists and transform your playing with the revolutionary French accordion school methods.</p>
+                <a href="#register" class="btn btn-primary">Register Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+        <div class="container">
+            <h2 class="section-title">About CNIMA</h2>
+            <div class="about-content">
+                <p class="lead">The CNIMA (Centre National et International de Musique et d'Accordéon) is an internationally renowned French-based accordion school founded by esteemed professor Jacques Mornet and award-winning accordionist Nathalie Boucheix.</p>
+                <p>CNIMA students have enjoyed multiple successes, including having won a record 123 awards at international competitions. The school has trained several generations of finest French accordionists.</p>
+                <p>The secret of Mornet's technique lies in approaching the accordion as a wind instrument rather than a keyboard instrument. The proper use of the air column combined with the appropriate touch of the keys creates outstanding results that transform one's playing and frees musicality.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workshop Details -->
+    <section id="workshop" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Workshop Details</h2>
+            <div class="workshop-grid">
+                <div class="workshop-card">
+                    <h3>When</h3>
+                    <p>Early May 2026<br>New Orleans, Louisiana</p>
+                    <p class="note">Final dates to be announced soon</p>
+                </div>
+                <div class="workshop-card">
+                    <h3>What You'll Learn</h3>
+                    <ul>
+                        <li>Revolutionary accordion techniques</li>
+                        <li>Proper bellows phrasing</li>
+                        <li>Musical expression and dynamics</li>
+                        <li>One-on-one instruction</li>
+                        <li>Group classes and masterclasses</li>
+                    </ul>
+                </div>
+                <div class="workshop-card">
+                    <h3>Who Can Attend</h3>
+                    <p>All levels, all ages, all styles</p>
+                    <p>From beginner-intermediate-advanced to professionals</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration Form -->
+    <section id="register" class="section">
+        <div class="container">
+            <h2 class="section-title">Registration</h2>
+            <p class="section-subtitle">Join us for this transformative accordion workshop. We are finalizing details and plans now for Early May 2026.</p>
+            
+            <form name="registration" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="registration-form">
+                <input type="hidden" name="form-name" value="registration" />
+                <p class="hidden">
+                    <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+                </p>
+
+                <div class="form-group">
+                    <label for="firstName">First Name *</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName">Last Name *</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone *</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateOfBirth">Date of Birth (DD/MM/YYYY)</label>
+                    <input type="text" id="dateOfBirth" name="dateOfBirth" placeholder="DD/MM/YYYY">
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" name="address">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city">
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State/Province</label>
+                        <input type="text" id="state" name="state">
+                    </div>
+                    <div class="form-group">
+                        <label for="postcode">Postal Code</label>
+                        <input type="text" id="postcode" name="postcode">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="country">Country *</label>
+                    <input type="text" id="country" name="country" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="accordionType">Accordion Type</label>
+                    <select id="accordionType" name="accordionType">
+                        <option value="">Select...</option>
+                        <option value="piano">Piano Accordion</option>
+                        <option value="chromatic-button">Chromatic Button Accordion</option>
+                        <option value="both">Both</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="skillLevel">Skill Level</label>
+                    <select id="skillLevel" name="skillLevel">
+                        <option value="">Select...</option>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                        <option value="professional">Professional</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="paymentOption">Payment Option</label>
+                    <select id="paymentOption" name="paymentOption" required>
+                        <option value="">Select...</option>
+                        <option value="deposit">$200 Deposit (Pre-registration)</option>
+                        <option value="earlybird">$650 Full Tuition (Early Bird)</option>
+                        <option value="full">$750 Full Tuition</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method</label>
+                    <select id="paymentMethod" name="paymentMethod" required>
+                        <option value="">Select...</option>
+                        <option value="zelle">Zelle (No fees)</option>
+                        <option value="paypal">PayPal/Venmo (3.5% fee applies)</option>
+                        <option value="check">Personal Check</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="howDidYouHear">How did you hear about CNIMA?</label>
+                    <input type="text" id="howDidYouHear" name="howDidYouHear">
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Additional Message</label>
+                    <textarea id="message" name="message" rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-large">Submit Registration</button>
+                </div>
+            </form>
+
+            <div id="form-success" class="form-success hidden">
+                <h3>Thank you for your registration!</h3>
+                <p>We've received your registration form and will contact you soon with payment instructions and further details.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <div class="contact-content">
+                <p>For questions about the workshop or to join our mailing list for updates:</p>
+                <p class="contact-email">
+                    <a href="mailto:cnimausa@gmail.com">cnimausa@gmail.com</a>
+                </p>
+                <div class="links">
+                    <a href="https://www.cnima.com/en" target="_blank" rel="noopener noreferrer">CNIMA France Website</a>
+                    <a href="https://www.youtube.com/@cnima" target="_blank" rel="noopener noreferrer">CNIMA YouTube Channel</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 CNIMA USA. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
