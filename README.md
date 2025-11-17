@@ -89,10 +89,27 @@ npx http-server -p 8000
 2. Right-click on `index.html`
 3. Select "Open with Live Server"
 
+### Stopping the Server
+
+**If you started the server in a terminal window:**
+- Press `Ctrl+C` in that terminal window
+
+**If you can't find the terminal or the server is running in the background:**
+```bash
+# Find and kill the process on port 8000
+lsof -ti:8000 | xargs kill -9
+
+# Or manually find and kill:
+# 1. Find the process ID
+lsof -ti:8000
+
+# 2. Kill it (replace PID with the number you see)
+kill -9 PID
+```
+
 ### Important Notes for Local Testing
 
 - **Netlify Forms won't work locally** - The form will display and validate, but submissions won't be processed until deployed to Netlify
-- **To stop the server**: Press `Ctrl+C` in the terminal
 - **Test responsiveness**: Use browser dev tools (F12) to test mobile views
 
 ## File Structure
