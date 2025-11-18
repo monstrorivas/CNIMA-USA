@@ -6,7 +6,7 @@
 }
 
 :root {
-    --primary-color: #1a1a1a;
+    --primary-color: #131c52;
     --secondary-color: #2d2d2d;
     --accent-color: #ff3b3b;
     --yellow-accent: #ffd93d;
@@ -439,7 +439,7 @@ h1, h2, h3, .section-title, .hero-title, .hero-subtitle {
     border-radius: 16px;
     box-shadow: var(--shadow-lg);
     border: 3px solid var(--bg-white);
-    background: var(--bg-white);
+    background: #7696ab;
     padding: 0.5rem;
     transition: var(--transition);
 }
