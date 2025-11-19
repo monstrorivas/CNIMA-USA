@@ -217,8 +217,8 @@ h1, h2, h3, .section-title, .hero-title, .hero-subtitle {
 .hero-content {
     position: relative;
     z-index: 2;
-    max-width: 800px;
-    padding: 0 20px;
+    max-width: 1000px;
+    padding: 0 10px;
     margin: 0 auto;
 }
 
@@ -434,12 +434,12 @@ h1, h2, h3, .section-title, .hero-title, .hero-subtitle {
 .about-image {
     max-width: 100%;
     width: 100%;
-    max-width: 500px;
+    max-width: 700px;
     height: auto;
     border-radius: 16px;
     box-shadow: var(--shadow-lg);
-    border: 3px solid var(--bg-white);
-    background: #7696ab;
+    /* border: 3px solid var(--bg-white); */
+    /* background: #7696ab; */
     padding: 0.5rem;
     transition: var(--transition);
 }
@@ -466,6 +466,57 @@ h1, h2, h3, .section-title, .hero-title, .hero-subtitle {
     padding-left: 1.5rem;
     margin-bottom: 2rem;
     line-height: 1.7;
+}
+
+/* Teacher Bios */
+.teacher-bio {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.teacher-bio:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.teacher-bio h3 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+    border-bottom: 2px solid var(--yellow-soft);
+    padding-bottom: 0.75rem;
+}
+
+.teacher-bio p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-color);
+    margin: 0 0 1.5rem 0;
+}
+
+.teacher-bio p:last-child {
+    margin-bottom: 0;
+}
+
+.teacher-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    display: inline-block;
+    margin-right: 1rem;
+    vertical-align: middle;
+    border: 2px solid var(--bg-white);
+    box-shadow: var(--shadow);
 }
 
 /* Workshop Grid */
