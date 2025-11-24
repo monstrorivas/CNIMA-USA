@@ -8,12 +8,6 @@
   status = 200
   force = false
 
-# Exclude Netlify form submission endpoints from redirects
-[[redirects]]
-  from = "/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
 [build.environment]
   NODE_VERSION = "18"
 
