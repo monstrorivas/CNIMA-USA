@@ -78,7 +78,7 @@ const hiddenForm = `    <!--
         AUTO-GENERATED from components/register.html - DO NOT EDIT MANUALLY
         Run: node scripts/generate-hidden-form.js
     -->
-    <form name="registration" method="POST" data-netlify="true" netlify-honeypot="bot-field" style="display: none;">
+    <form name="registration" method="POST" netlify netlify-honeypot="bot-field" style="display: none;">
 ${hiddenFormFields}    </form>`;
 
 // Read index.html
