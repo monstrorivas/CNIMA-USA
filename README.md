@@ -47,6 +47,23 @@ The registration form uses Netlify Forms. After deployment:
 3. You'll see all form submissions there
 4. You can set up email notifications in Site settings → Forms → Form notifications
 
+### Editing the Registration Form
+
+**Important:** The form is split into two parts due to Netlify's requirements:
+- **Visible form**: `components/register.html` - Edit this file to make changes
+- **Hidden form**: `index.html` - Auto-generated, do not edit manually
+
+**How it works:**
+- When you edit `components/register.html`, the hidden form in `index.html` is automatically generated during Netlify builds
+- The build script (`scripts/generate-hidden-form.js`) extracts all form fields and creates the hidden form
+- **You only need to edit `components/register.html`** - the rest is handled automatically
+
+**For local testing** (optional):
+```bash
+# If you want to test the form generation locally before deploying
+node scripts/generate-hidden-form.js
+```
+
 ## Custom Domain
 
 To connect your custom domain (cnimausa.com):
@@ -115,11 +132,16 @@ kill -9 PID
 ## File Structure
 
 ```
-├── index.html          # Main HTML file
-├── styles.css          # All styling
-├── script.js           # JavaScript functionality
-├── netlify.toml        # Netlify configuration
-└── README.md           # This file
+├── index.html              # Main HTML file (with auto-generated hidden form)
+├── styles.css              # All styling
+├── script.js               # JavaScript functionality
+├── netlify.toml            # Netlify configuration
+├── components/             # Modular HTML components
+│   ├── register.html      # Registration form (edit this to change the form)
+│   └── ...
+├── scripts/                # Build scripts
+│   └── generate-hidden-form.js  # Auto-generates hidden form for Netlify
+└── README.md               # This file
 ```
 
 ## Notes
@@ -127,4 +149,5 @@ kill -9 PID
 - The form uses Netlify Forms which requires no backend code
 - All form submissions will be available in your Netlify dashboard
 - The site is fully responsive and works on all devices
-- Update the workshop dates and details in `index.html` as needed
+- **Form editing**: Only edit `components/register.html` - the hidden form in `index.html` is auto-generated during builds
+- Update the workshop dates and details in the component files as needed

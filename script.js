@@ -20,17 +20,18 @@ function initializeScripts() {
     const formSuccess = document.getElementById('form-success');
 
     if (form) {
-        form.addEventListener('submit', function(e) {
-            // Let Netlify handle the form submission
-            // We'll show success message after a brief delay
-            setTimeout(() => {
-                form.classList.add('hidden');
-                if (formSuccess) {
-                    formSuccess.classList.remove('hidden');
-                    formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 100);
-        });
+        // Check on page load if we're coming back from a successful submission
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true') {
+            if (form) form.classList.add('hidden');
+            if (formSuccess) {
+                formSuccess.classList.remove('hidden');
+                formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+        
+        // Let Netlify handle form submission naturally
+        // Don't prevent default - let it submit to Netlify
     }
 
     // Add active state to navigation links on scroll
