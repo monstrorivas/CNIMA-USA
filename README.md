@@ -1,5 +1,7 @@
 # CNIMA USA Website
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/f7a150d8-35d6-4ae5-8b23-ab364af88379/deploy-status)](https://app.netlify.com/projects/gilded-crostata-bfc852/deploys)
+
 Modern website for CNIMA USA accordion workshops in New Orleans.
 
 ## Features
