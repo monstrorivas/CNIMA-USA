@@ -69,7 +69,22 @@ fields.forEach((fieldInfo, fieldName) => {
     } else if (fieldInfo.type === 'textarea') {
         hiddenFormFields += `        <textarea name="${fieldName}"></textarea>\n`;
     } else {
-        hiddenFormFields += `        <input name="${fieldName}" />\n`;
+        // Check if it's a hidden input with a value attribute
+        const inputMatch = registerContent.match(new RegExp(`<input[^>]*name=["']${fieldName}["'][^>]*>`, 'i'));
+        let inputTag = `<input name="${fieldName}" />`;
+        if (inputMatch) {
+            // Extract value attribute if present
+            const valueMatch = inputMatch[0].match(/value=["']([^"']+)["']/i);
+            if (valueMatch) {
+                inputTag = `<input name="${fieldName}" value="${valueMatch[1]}" />`;
+            }
+            // Also preserve type="hidden" if present
+            const typeMatch = inputMatch[0].match(/type=["']([^"']+)["']/i);
+            if (typeMatch && typeMatch[1] === 'hidden') {
+                inputTag = inputTag.replace('<input', '<input type="hidden"');
+            }
+        }
+        hiddenFormFields += `        ${inputTag}\n`;
     }
 });
 
@@ -84,19 +99,34 @@ ${hiddenFormFields}    </form>`;
 // Read index.html
 let indexContent = fs.readFileSync(indexPath, 'utf8');
 
-// Replace the hidden form section
-const formStartMarker = '<!-- \n        Hidden form';
-const formEndMarker = '</form>';
-const startIndex = indexContent.indexOf(formStartMarker);
-const endIndex = indexContent.indexOf(formEndMarker, startIndex) + formEndMarker.length;
+// Replace the hidden form section - use regex to find the form regardless of whitespace
+const formRegex = /(\s*)<!--\s*\n\s*Hidden form[\s\S]*?<\/form>/;
+const indexFormMatch = indexContent.match(formRegex);
 
-if (startIndex === -1 || endIndex === -1) {
+if (!indexFormMatch) {
     console.error('❌ Could not find hidden form section in index.html');
+    console.error('   Looking for form with "Hidden form" comment');
     process.exit(1);
 }
 
+// Get the indentation from the match (preserve existing indentation)
+const baseIndent = indexFormMatch[1] || '    ';
+
+// Format the new form with proper indentation matching the existing structure
+const newFormLines = hiddenForm.split('\n');
+const formattedForm = newFormLines.map((line) => {
+    const trimmed = line.trim();
+    if (!trimmed) return ''; // Skip empty lines
+    
+    // Calculate relative indentation from the template (which uses 4 spaces base)
+    const originalIndent = line.match(/^(\s*)/)[1].length;
+    const relativeIndent = Math.max(0, originalIndent - 4); // Subtract base 4 spaces
+    
+    return baseIndent + ' '.repeat(relativeIndent) + trimmed;
+}).filter(line => line !== '').join('\n');
+
 // Replace the form section
-indexContent = indexContent.substring(0, startIndex) + hiddenForm + '\n    \n' + indexContent.substring(endIndex + 1);
+indexContent = indexContent.replace(formRegex, formattedForm);
 
 // Write back to index.html
 fs.writeFileSync(indexPath, indexContent, 'utf8');

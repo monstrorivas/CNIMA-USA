@@ -6,6 +6,8 @@
         
         <form name="registration" method="POST" netlify netlify-honeypot="bot-field" data-netlify-redirect="/#register?success=true" class="registration-form">
             <input type="hidden" name="form-name" value="registration" />
+            <input type="hidden" name="email" />
+            <input type="hidden" name="subject" value="CNIMA USA New Registration (2026)" />
             <p class="hidden">
                 <label>Don't fill this out if you're human: <input name="bot-field" /></label>
             </p>
@@ -102,7 +104,7 @@
 
         <div id="form-success" class="form-success hidden">
             <h3>Thank you for your registration!</h3>
-            <p>We've received your registration form and will contact you soon with payment instructions and further details.</p>
+            <p>We've received your registration form and will contact you soon ...</p>
         </div>
     </div>
 </section>
