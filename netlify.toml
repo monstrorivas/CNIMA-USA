@@ -12,6 +12,6 @@
   NODE_VERSION = "18"
 
 [[forms.notifications]]
-  for = "registration"
+  form = "registration"
   email = "monstros.consulting@gmail.com"
 
