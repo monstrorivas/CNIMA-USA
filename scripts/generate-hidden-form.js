@@ -93,10 +93,16 @@ fields.forEach((fieldInfo, fieldName) => {
             if (valueMatch) {
                 inputTag = `<input name="${fieldName}" value="${valueMatch[1]}" />`;
             }
-            // Also preserve type="hidden" if present
+            // Preserve type attribute - important for email fields (Reply-To) and hidden fields
             const typeMatch = inputMatch[0].match(/type=["']([^"']+)["']/i);
-            if (typeMatch && typeMatch[1] === 'hidden') {
-                inputTag = inputTag.replace('<input', '<input type="hidden"');
+            if (typeMatch) {
+                const inputType = typeMatch[1];
+                if (inputType === 'hidden') {
+                    inputTag = inputTag.replace('<input', '<input type="hidden"');
+                } else if (inputType === 'email') {
+                    // Preserve type="email" so Netlify can set Reply-To header
+                    inputTag = inputTag.replace('<input', '<input type="email"');
+                }
             }
         }
         hiddenFormFields += `        ${inputTag}\n`;
