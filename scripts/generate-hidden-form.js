@@ -117,12 +117,18 @@ debugLog('  First 200 chars:', hiddenFormFields.substring(0, 200));
 // Remove trailing newline from hiddenFormFields to avoid extra blank lines
 const cleanedFormFields = hiddenFormFields.replace(/\n+$/, '');
 
+// Extract redirect/action attributes from the visible form
+const redirectMatch = registerContent.match(/data-netlify-redirect=["']([^"']+)["']/i);
+const actionMatch = registerContent.match(/<form[^>]*action=["']([^"']+)["']/i);
+const redirectAttr = redirectMatch ? ` data-netlify-redirect="${redirectMatch[1]}"` : '';
+const actionAttr = actionMatch ? ` action="${actionMatch[1]}"` : '';
+
 const hiddenForm = `    <!-- 
         Hidden form for Netlify to detect at build time.
         AUTO-GENERATED from components/register.html - DO NOT EDIT MANUALLY
         Run: node scripts/generate-hidden-form.js
     -->
-    <form name="registration" method="POST" netlify netlify-honeypot="bot-field" style="display: none;">
+    <form name="registration" method="POST" netlify netlify-honeypot="bot-field" style="display: none;"${actionAttr}${redirectAttr}>
 ${cleanedFormFields}
     </form>`;
 
