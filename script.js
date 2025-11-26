@@ -16,23 +16,47 @@ function initializeScripts() {
     });
 
     // Form submission handling
-    const form = document.querySelector('form[name="registration"]');
-    const formSuccess = document.getElementById('form-success');
+    function checkAndShowSuccess() {
+        const form = document.querySelector('form[name="registration"]');
+        const formSuccess = document.getElementById('form-success');
 
-    if (form) {
         // Check on page load if we're coming back from a successful submission
+        // Check both window.location.search (query before hash) and hash (query after hash)
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('success') === 'true') {
-            if (form) form.classList.add('hidden');
-            if (formSuccess) {
-                formSuccess.classList.remove('hidden');
-                formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
+        const hash = window.location.hash;
+        const hashParams = hash.includes('?') ? new URLSearchParams(hash.split('?')[1]) : null;
         
-        // Let Netlify handle form submission naturally
-        // Don't prevent default - let it submit to Netlify
+        const isSuccess = urlParams.get('success') === 'true' || 
+                         (hashParams && hashParams.get('success') === 'true');
+        
+        if (isSuccess && form && formSuccess) {
+            console.log('Showing success message');
+            form.classList.add('hidden');
+            formSuccess.classList.remove('hidden');
+            // Wait a bit for scroll to work properly
+            setTimeout(() => {
+                formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+            return true; // Successfully showed
+        }
+        return false; // Elements not ready yet
     }
+    
+    // Check multiple times to ensure component is loaded
+    let attempts = 0;
+    const maxAttempts = 10;
+    const checkInterval = setInterval(() => {
+        attempts++;
+        if (checkAndShowSuccess() || attempts >= maxAttempts) {
+            clearInterval(checkInterval);
+        }
+    }, 100);
+    
+    // Also check when hash changes (in case user navigates to #register?success=true)
+    window.addEventListener('hashchange', checkAndShowSuccess);
+    
+    // Let Netlify handle form submission naturally
+    // Don't prevent default - let it submit to Netlify
 
     // Add active state to navigation links on scroll
     function updateActiveNav() {
