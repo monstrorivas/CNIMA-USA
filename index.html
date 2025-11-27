@@ -45,6 +45,16 @@
                 <textarea name="message"></textarea> 
             </form>
     
+    <!-- 
+        Hidden mailing list form for Netlify to detect at build time.
+        This ensures Netlify can detect the form fields at build time.
+    -->
+    <form name="mailing-list" method="POST" netlify netlify-honeypot="bot-field" action="/mailing-list-success.html" style="display: none;">
+        <input type="hidden" name="form-name" value="mailing-list" />
+        <input name="bot-field" />
+        <input type="email" name="email" />
+    </form>
+    
     <!-- Components will be loaded here -->
     <div id="nav-container"></div>
     <div id="hero-container"></div>
