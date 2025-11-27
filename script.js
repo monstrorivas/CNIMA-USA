@@ -71,27 +71,30 @@ function initializeScripts() {
     // Let Netlify handle form submission naturally
     // Don't prevent default - let it submit to Netlify
     
-    // Mailing list form handling
+    // Mailing list form handling - same pattern as registration form
     function checkMailingListSuccess() {
         const mailingListForm = document.querySelector('form[name="mailing-list"]');
         const mailingListSuccess = document.getElementById('mailing-list-success');
         
-        if (mailingListForm && mailingListSuccess) {
-            // Check on page load if we're coming back from a successful subscription
-            const urlParams = new URLSearchParams(window.location.search);
-            const hash = window.location.hash;
-            const hashParams = hash.includes('?') ? new URLSearchParams(hash.split('?')[1]) : null;
-            
-            const isSubscribed = urlParams.get('subscribed') === 'true' || 
-                               (hashParams && hashParams.get('subscribed') === 'true');
-            
-            if (isSubscribed) {
-                mailingListForm.classList.add('hidden');
-                mailingListSuccess.classList.remove('hidden');
-                return true;
-            }
+        // Check on page load if we're coming back from a successful subscription
+        // Check both window.location.search (query before hash) and hash (query after hash)
+        const urlParams = new URLSearchParams(window.location.search);
+        const hash = window.location.hash;
+        const hashParams = hash.includes('?') ? new URLSearchParams(hash.split('?')[1]) : null;
+        
+        const isSubscribed = urlParams.get('subscribed') === 'true' || 
+                           (hashParams && hashParams.get('subscribed') === 'true');
+        
+        if (isSubscribed && mailingListForm && mailingListSuccess) {
+            mailingListForm.classList.add('hidden');
+            mailingListSuccess.classList.remove('hidden');
+            // Wait a bit for scroll to work properly
+            setTimeout(() => {
+                mailingListSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+            return true; // Successfully showed
         }
-        return false;
+        return false; // Elements not ready yet
     }
     
     // Check multiple times to ensure component is loaded
@@ -104,7 +107,7 @@ function initializeScripts() {
         }
     }, 100);
     
-    // Also check when hash changes
+    // Also check when hash changes (in case user navigates to #contact?subscribed=true)
     window.addEventListener('hashchange', checkMailingListSuccess);
 
     // Add active state to navigation links on scroll
