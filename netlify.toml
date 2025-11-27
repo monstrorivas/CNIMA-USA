@@ -13,5 +13,9 @@
 
 [[forms.notifications]]
   form = "registration"
-  email = "monstros.consulting@gmail.com"
+  email = "cnimausa@gmail.com"
+
+[[forms.notifications]]
+  form = "mailing-list"
+  email = "cnimausa@gmail.com"
 

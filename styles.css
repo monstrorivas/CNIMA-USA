@@ -771,6 +771,85 @@ h1, h2, h3, .section-title, .hero-title, .hero-subtitle {
     box-shadow: var(--shadow);
 }
 
+/* Mailing List */
+.mailing-list {
+    margin: 3rem 0;
+    padding: 2rem;
+    background: var(--bg-white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.mailing-list h3 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.mailing-list > p {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+}
+
+.mailing-list-form {
+    margin: 0;
+}
+
+.mailing-list-input-group {
+    display: flex;
+    gap: 0.75rem;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.mailing-list-input-group input {
+    flex: 1;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: var(--transition);
+}
+
+.mailing-list-input-group input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(255, 59, 59, 0.1);
+}
+
+.mailing-list-input-group .btn {
+    padding: 0.875rem 2rem;
+    white-space: nowrap;
+}
+
+.mailing-list-success {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--yellow-soft);
+    border-radius: 8px;
+    border: 1px solid var(--accent-color);
+}
+
+.mailing-list-success p {
+    color: var(--accent-color);
+    font-weight: 600;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .mailing-list-input-group {
+        flex-direction: column;
+    }
+    
+    .mailing-list-input-group .btn {
+        width: 100%;
+    }
+}
+
 /* Footer */
 .footer {
     background: var(--primary-color);

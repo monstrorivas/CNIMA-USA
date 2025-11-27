@@ -70,6 +70,25 @@ function initializeScripts() {
     
     // Let Netlify handle form submission naturally
     // Don't prevent default - let it submit to Netlify
+    
+    // Mailing list form handling
+    const mailingListForm = document.querySelector('form[name="mailing-list"]');
+    const mailingListSuccess = document.getElementById('mailing-list-success');
+    
+    if (mailingListForm && mailingListSuccess) {
+        mailingListForm.addEventListener('submit', function(e) {
+            // Let Netlify handle the submission
+            // After successful submission, Netlify will redirect or we can show success message
+            setTimeout(() => {
+                // Check if form was submitted successfully (Netlify redirects or shows success)
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('subscribed') === 'true') {
+                    mailingListForm.classList.add('hidden');
+                    mailingListSuccess.classList.remove('hidden');
+                }
+            }, 1000);
+        });
+    }
 
     // Add active state to navigation links on scroll
     function updateActiveNav() {

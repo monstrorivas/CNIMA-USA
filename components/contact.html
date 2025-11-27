@@ -4,10 +4,30 @@
     <div class="container">
         <h2 class="section-title">Contact Us</h2>
         <div class="contact-content">
-            <p>For questions about the workshop or to join our mailing list for updates:</p>
+            <p>For questions about the workshop:</p>
             <p class="contact-email">
                 <a href="mailto:cnimausa@gmail.com" class="mailto-link">cnimausa@gmail.com</a>
             </p>
+            
+            <!-- Mailing List Signup -->
+            <div class="mailing-list">
+                <h3>Join Our Mailing List</h3>
+                <p>Stay updated with workshop news and announcements</p>
+                <form name="mailing-list" method="POST" netlify netlify-honeypot="bot-field" class="mailing-list-form">
+                    <input type="hidden" name="form-name" value="mailing-list" />
+                    <p class="hidden">
+                        <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+                    </p>
+                    <div class="mailing-list-input-group">
+                        <input type="email" name="email" placeholder="Enter your email address" required>
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                    </div>
+                </form>
+                <div id="mailing-list-success" class="mailing-list-success hidden">
+                    <p>✓ Thank you! You've been added to our mailing list.</p>
+                </div>
+            </div>
+            
             <div class="links">
                 <a href="https://www.cnima.com/en" target="_blank" rel="noopener noreferrer">Visit CNIMA France Website</a>
             </div>
