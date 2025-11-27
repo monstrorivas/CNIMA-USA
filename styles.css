@@ -712,9 +712,15 @@ h1, h2, h3, .section-title, .hero-title, .hero-subtitle {
     z-index: 1;
 }
 
+.contact-content > p:first-of-type {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: var(--text-light);
+}
+
 .contact-email {
     font-size: 1.3rem;
-    margin: 1.5rem 0;
+    margin: 2rem 0;
 }
 
 .contact-email a {
@@ -741,7 +747,7 @@ h1, h2, h3, .section-title, .hero-title, .hero-subtitle {
     display: flex;
     gap: 1.5rem;
     justify-content: center;
-    margin-top: 2rem;
+    margin-top: 2.5rem;
     flex-wrap: wrap;
 }
 
@@ -749,11 +755,12 @@ h1, h2, h3, .section-title, .hero-title, .hero-subtitle {
     color: var(--primary-color);
     text-decoration: none;
     font-weight: 600;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
     transition: var(--transition);
     background: var(--bg-white);
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
+    font-size: 1rem;
 }
 
 .links a:hover {

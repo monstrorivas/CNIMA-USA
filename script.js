@@ -1,11 +1,24 @@
 // Initialize all scripts after components are loaded
 function initializeScripts() {
     // Smooth scrolling for anchor links (using event delegation)
+    // Only intercept links that start with # (internal anchors), not mailto:, http:, etc.
     document.addEventListener('click', function(e) {
-        const anchor = e.target.closest('a[href^="#"]');
-        if (anchor) {
+        const anchor = e.target.closest('a');
+        if (!anchor) return;
+        
+        const href = anchor.getAttribute('href');
+        if (!href) return;
+        
+        // Explicitly allow mailto, tel, http, https links to work normally - don't interfere at all
+        if (href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('http://') || href.startsWith('https://')) {
+            return; // Let the browser handle these links normally - don't prevent default
+        }
+        
+        // Only handle internal anchor links (starting with #)
+        if (href.startsWith('#')) {
             e.preventDefault();
-            const target = document.querySelector(anchor.getAttribute('href'));
+            e.stopPropagation();
+            const target = document.querySelector(href);
             if (target) {
                 target.scrollIntoView({
                     behavior: 'smooth',
