@@ -72,23 +72,40 @@ function initializeScripts() {
     // Don't prevent default - let it submit to Netlify
     
     // Mailing list form handling
-    const mailingListForm = document.querySelector('form[name="mailing-list"]');
-    const mailingListSuccess = document.getElementById('mailing-list-success');
-    
-    if (mailingListForm && mailingListSuccess) {
-        mailingListForm.addEventListener('submit', function(e) {
-            // Let Netlify handle the submission
-            // After successful submission, Netlify will redirect or we can show success message
-            setTimeout(() => {
-                // Check if form was submitted successfully (Netlify redirects or shows success)
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('subscribed') === 'true') {
-                    mailingListForm.classList.add('hidden');
-                    mailingListSuccess.classList.remove('hidden');
-                }
-            }, 1000);
-        });
+    function checkMailingListSuccess() {
+        const mailingListForm = document.querySelector('form[name="mailing-list"]');
+        const mailingListSuccess = document.getElementById('mailing-list-success');
+        
+        if (mailingListForm && mailingListSuccess) {
+            // Check on page load if we're coming back from a successful subscription
+            const urlParams = new URLSearchParams(window.location.search);
+            const hash = window.location.hash;
+            const hashParams = hash.includes('?') ? new URLSearchParams(hash.split('?')[1]) : null;
+            
+            const isSubscribed = urlParams.get('subscribed') === 'true' || 
+                               (hashParams && hashParams.get('subscribed') === 'true');
+            
+            if (isSubscribed) {
+                mailingListForm.classList.add('hidden');
+                mailingListSuccess.classList.remove('hidden');
+                return true;
+            }
+        }
+        return false;
     }
+    
+    // Check multiple times to ensure component is loaded
+    let mailingListAttempts = 0;
+    const maxMailingListAttempts = 10;
+    const mailingListCheckInterval = setInterval(() => {
+        mailingListAttempts++;
+        if (checkMailingListSuccess() || mailingListAttempts >= maxMailingListAttempts) {
+            clearInterval(mailingListCheckInterval);
+        }
+    }, 100);
+    
+    // Also check when hash changes
+    window.addEventListener('hashchange', checkMailingListSuccess);
 
     // Add active state to navigation links on scroll
     function updateActiveNav() {
