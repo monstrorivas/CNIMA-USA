@@ -46,10 +46,16 @@ function initializeScripts() {
             console.log('Showing success message');
             form.classList.add('hidden');
             formSuccess.classList.remove('hidden');
-            // Wait a bit for scroll to work properly
+            // Scroll to register section (not just the success message) after components are loaded
             setTimeout(() => {
-                formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
+                const registerSection = document.getElementById('register');
+                if (registerSection) {
+                    registerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    // Fallback: scroll to success message
+                    formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 400);
             return true; // Successfully showed
         }
         return false; // Elements not ready yet
@@ -88,10 +94,16 @@ function initializeScripts() {
         if (isSubscribed && mailingListForm && mailingListSuccess) {
             mailingListForm.classList.add('hidden');
             mailingListSuccess.classList.remove('hidden');
-            // Wait a bit for scroll to work properly
+            // Scroll to contact section (not just the success message) after components are loaded
             setTimeout(() => {
-                mailingListSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
+                const contactSection = document.getElementById('contact');
+                if (contactSection) {
+                    contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    // Fallback: scroll to success message
+                    mailingListSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 400);
             return true; // Successfully showed
         }
         return false; // Elements not ready yet

@@ -73,6 +73,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (typeof initializeScripts === 'function') {
             initializeScripts();
         }
+        
+        // Handle hash navigation after components are loaded
+        // This ensures sections exist before trying to scroll to them
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1).split('?')[0]; // Remove # and any query params
+            setTimeout(() => {
+                const targetElement = document.getElementById(hash);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 300);
+        }
     }, 50);
 });
 
