@@ -3,14 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0;url=/?success=true#register">
     <title>Registration Successful - CNIMA USA</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .success-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            padding: 2rem;
+        }
+        .success-container {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+        .success-icon {
+            font-size: 4rem;
+            color: #4caf50;
+            margin-bottom: 1.5rem;
+        }
+        .success-title {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        .success-message {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .success-message p {
+            margin-bottom: 1rem;
+        }
+        .success-message a {
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+        .btn-back {
+            display: inline-block;
+            padding: 0.875rem 2rem;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+        .btn-back:hover {
+            background: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        @media (max-width: 768px) {
+            .success-container {
+                padding: 2rem 1.5rem;
+            }
+            .success-title {
+                font-size: 1.5rem;
+            }
+            .success-message {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <p>Redirecting...</p>
-    <script>
-        window.location.href = '/?success=true#register';
-    </script>
+    <div class="success-page">
+        <div class="success-container">
+            <div class="success-icon">✓</div>
+            <h1 class="success-title">Registration Successful!</h1>
+            <div class="success-message">
+                <p>Thank you for registering for the CNIMA USA Accordion Workshop!</p>
+                <p>You should receive a confirmation email shortly. Please don't forget to submit your payment using any of the <a href="/#payment">methods above</a>.</p>
+            </div>
+            <a href="/" class="btn-back">Go Back to Home</a>
+        </div>
+    </div>
 </body>
 </html>
-

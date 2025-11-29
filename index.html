@@ -13,7 +13,7 @@
                 AUTO-GENERATED from components/register.html - DO NOT EDIT MANUALLY 
                 Run: node scripts/generate-hidden-form.js 
             --> 
-            <form name="registration" method="POST" netlify netlify-honeypot="bot-field" style="display: none;" action="/success.html"> 
+            <form name="registration" method="POST" netlify netlify-honeypot="bot-field" style="display: none !important; position: absolute; left: -9999px; pointer-events: none;" action="/success.html"> 
             <input type="hidden" name="form-name" value="registration" /> 
                 <input name="bot-field" /> 
                 <input type="hidden" name="subject" value="CNIMA USA New Registration (2026)" /> 
@@ -48,8 +48,11 @@
     <!-- 
         Hidden mailing list form for Netlify to detect at build time.
         This ensures Netlify can detect the form fields at build time.
+        Note: This form is hidden and only used for Netlify detection.
+        The actual form submission comes from the visible form in contact.html
     -->
-    <form name="mailing-list" method="POST" netlify netlify-honeypot="bot-field" action="/mailing-list-success.html" style="display: none;">
+    <!-- Hidden form for Netlify detection only - not for submission -->
+    <form name="mailing-list-detection" method="POST" netlify netlify-honeypot="bot-field" style="display: none !important; position: absolute; left: -9999px; pointer-events: none;">
         <input type="hidden" name="form-name" value="mailing-list" />
         <input name="bot-field" />
         <input type="email" name="email" />
