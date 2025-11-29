@@ -11,7 +11,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--primary-color);
+            background: var(--yellow-soft);
             padding: 2rem;
         }
         .success-container {
@@ -25,7 +25,7 @@
         }
         .success-icon {
             font-size: 4rem;
-            color: #4caf50;
+            color: var(--accent-color);
             margin-bottom: 1.5rem;
         }
         .success-title {
@@ -45,22 +45,6 @@
         .success-message a {
             color: var(--accent-color);
             text-decoration: underline;
-        }
-        .btn-back {
-            display: inline-block;
-            padding: 0.875rem 2rem;
-            background: var(--primary-color);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: var(--transition);
-            font-size: 1rem;
-        }
-        .btn-back:hover {
-            background: var(--accent-color);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
         }
         @media (max-width: 768px) {
             .success-container {
@@ -84,7 +68,7 @@
                 <p>Thank you for registering for the CNIMA USA Accordion Workshop!</p>
                 <p>You should receive a confirmation email shortly. Please don't forget to submit your payment using any of these <a href="/#payment">methods</a>.</p>
             </div>
-            <a href="/" class="btn-back">Go Back to Home</a>
+            <a href="/" class="btn btn-primary">Go Back to Home</a>
         </div>
     </div>
 </body>

@@ -3,14 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0;url=/?subscribed=true#contact">
     <title>Subscribed - CNIMA USA</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .success-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--yellow-soft);
+            padding: 2rem;
+        }
+        .success-container {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+        .success-icon {
+            font-size: 4rem;
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+        }
+        .success-title {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        .success-message {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .success-message p {
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 768px) {
+            .success-container {
+                padding: 2rem 1.5rem;
+            }
+            .success-title {
+                font-size: 1.5rem;
+            }
+            .success-message {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <p>Redirecting...</p>
-    <script>
-        window.location.href = '/?subscribed=true#contact';
-    </script>
+    <div class="success-page">
+        <div class="success-container">
+            <div class="success-icon">✓</div>
+            <h1 class="success-title">Successfully Subscribed!</h1>
+            <div class="success-message">
+                <p>Thank you for joining our mailing list!</p>
+                <p>You'll receive updates about workshop news and announcements.</p>
+            </div>
+            <a href="/" class="btn btn-primary">Go Back to Home</a>
+        </div>
+    </div>
 </body>
 </html>
-
