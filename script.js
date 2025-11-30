@@ -180,6 +180,104 @@ function initializeScripts() {
             e.target.value = value;
         });
     }
+
+    // Workshop payment option handler - update prices when "Both" is selected
+    // Use event delegation to handle dynamically loaded components
+    if (!window.workshopPaymentHandlerInitialized) {
+        // Store original payment options
+        const originalOptions = {
+            earlybird: {
+                value: 'earlybird',
+                text: '$675 Early Bird (if paid by January 15, 2025)'
+            },
+            full: {
+                value: 'full',
+                text: '$799 Full Tuition (if paid after January 15, 2025)'
+            }
+        };
+        
+        const doubleOptions = {
+            earlybird: {
+                value: 'earlybird',
+                text: '$1,350 Early Bird (if paid by January 15, 2025)'
+            },
+            full: {
+                value: 'full',
+                text: '$1,598 Full Tuition (if paid after January 15, 2025)'
+            }
+        };
+        
+        function updatePaymentOptions(workshopSelect, paymentOptionSelect) {
+            if (!workshopSelect || !paymentOptionSelect) {
+                return;
+            }
+            
+            const selectedWorkshop = workshopSelect.value;
+            const currentPaymentValue = paymentOptionSelect.value;
+            
+            // Clear all existing options
+            paymentOptionSelect.innerHTML = '';
+            
+            // Add the "Select..." option first
+            const selectOption = document.createElement('option');
+            selectOption.value = '';
+            selectOption.textContent = 'Select...';
+            paymentOptionSelect.appendChild(selectOption);
+            
+            // Determine which options to use
+            const optionsToUse = selectedWorkshop === 'both' ? doubleOptions : originalOptions;
+            
+            // Add the appropriate options
+            Object.values(optionsToUse).forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.text;
+                paymentOptionSelect.appendChild(optionElement);
+            });
+            
+            // Try to restore the previous selection if it still exists
+            if (currentPaymentValue && (currentPaymentValue === 'earlybird' || currentPaymentValue === 'full')) {
+                paymentOptionSelect.value = currentPaymentValue;
+            } else {
+                paymentOptionSelect.value = '';
+            }
+        }
+        
+        // Use event delegation on the document to catch changes to workshop select
+        document.addEventListener('change', function(e) {
+            if (e.target && e.target.id === 'workshop') {
+                const workshopSelect = e.target;
+                const paymentOptionSelect = document.getElementById('paymentOption');
+                if (paymentOptionSelect) {
+                    updatePaymentOptions(workshopSelect, paymentOptionSelect);
+                }
+            }
+        });
+        
+        // Initialize payment options when elements become available
+        function tryInitializePaymentOptions() {
+            const workshopSelect = document.getElementById('workshop');
+            const paymentOptionSelect = document.getElementById('paymentOption');
+            
+            if (workshopSelect && paymentOptionSelect) {
+                updatePaymentOptions(workshopSelect, paymentOptionSelect);
+                return true;
+            }
+            return false;
+        }
+        
+        // Try to initialize immediately and with retries
+        let attempts = 0;
+        const maxAttempts = 30;
+        const initInterval = setInterval(() => {
+            attempts++;
+            if (tryInitializePaymentOptions() || attempts >= maxAttempts) {
+                clearInterval(initInterval);
+            }
+        }, 200);
+        
+        window.workshopPaymentHandlerInitialized = true;
+    }
 }
 
 // If components are already loaded (fallback for direct access)

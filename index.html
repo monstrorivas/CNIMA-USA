@@ -13,7 +13,7 @@
                 AUTO-GENERATED from components/register.html - DO NOT EDIT MANUALLY 
                 Run: node scripts/generate-hidden-form.js 
             --> 
-            <form name="registration" method="POST" netlify netlify-honeypot="bot-field" style="display: none !important; position: absolute; left: -9999px; pointer-events: none;" action="/success.html"> 
+            <form name="registration" method="POST" netlify netlify-honeypot="bot-field" style="display: none;" action="/success.html"> 
             <input type="hidden" name="form-name" value="registration" /> 
                 <input name="bot-field" /> 
                 <input type="hidden" name="subject" value="CNIMA USA New Registration (2026)" /> 
@@ -31,6 +31,11 @@
                     <option value="intermediate">intermediate</option> 
                     <option value="advanced">advanced</option> 
                     <option value="professional">professional</option> 
+                </select> 
+                <select name="workshop"> 
+                    <option value="workshop1">workshop1</option> 
+                    <option value="workshop2">workshop2</option> 
+                    <option value="both">both</option> 
                 </select> 
                 <select name="paymentOption"> 
                     <option value="earlybird">earlybird</option> 
