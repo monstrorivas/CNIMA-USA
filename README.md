@@ -51,13 +51,16 @@ The registration form uses Netlify Forms. After deployment:
 
 ### Editing the Registration Form
 
-**Important:** The form is split into two parts due to Netlify's requirements:
+**Note:** The root `index.html` is currently the 2027 teaser page and has no live registration form — registration hasn't opened for the next workshop yet. `components/register.html` (root-level) still holds the last working form as a template for when it does.
+
+Once a real registration form is wired back into `index.html`, the same split applies as before:
 - **Visible form**: `components/register.html` - Edit this file to make changes
 - **Hidden form**: `index.html` - Auto-generated, do not edit manually
 
 **How it works:**
 - When you edit `components/register.html`, the hidden form in `index.html` is automatically generated during Netlify builds
 - The build script (`scripts/generate-hidden-form.js`) extracts all form fields and creates the hidden form
+- If `index.html` has no hidden-form placeholder (or `components/register.html` doesn't exist), the script logs a message and skips instead of failing the build - this is the current state for the 2027 teaser
 - **You only need to edit `components/register.html`** - the rest is handled automatically
 
 **For local testing** (optional):
@@ -82,7 +85,7 @@ To connect your custom domain (cnimausa.com):
 **Option 1: Python (Built-in on macOS)**
 ```bash
 # Navigate to the project directory
-cd /Users/albertorivas/personal/git/github/CNIMA-USA
+cd /Users/albertorivas/Projects/git/github/CNIMA-USA
 
 # Start the server
 python3 -m http.server 8000
@@ -94,7 +97,7 @@ python3 -m http.server 8000
 **Option 2: Node.js http-server**
 ```bash
 # Navigate to the project directory
-cd /Users/albertorivas/personal/git/github/CNIMA-USA
+cd /Users/albertorivas/Projects/git/github/CNIMA-USA
 
 # Start the server (no installation needed)
 npx http-server -p 8000
@@ -134,22 +137,32 @@ kill -9 PID
 ## File Structure
 
 ```
-├── index.html              # Main HTML file (with auto-generated hidden form)
-├── styles.css              # All styling
-├── script.js               # JavaScript functionality
+├── index.html              # Current homepage: the 2027 "coming soon" teaser
+├── styles-2027.css         # Styling for the teaser and the archive hub
 ├── netlify.toml            # Netlify configuration
-├── components/             # Modular HTML components
-│   ├── register.html      # Registration form (edit this to change the form)
+├── success.html            # Registration success page (Netlify form redirect)
+├── mailing-list-success.html  # Mailing-list signup success page
+├── archive/
+│   ├── index.html          # Archive hub - lists every past workshop year
+│   └── 2026/                # Frozen snapshot of the 2026 workshop site
+│       ├── index.html
+│       ├── styles.css
+│       ├── script.js
+│       └── components/      # Same component pattern as below, content frozen
+├── components/              # Dormant template for the next full year build-out
+│   ├── register.html       # Last working registration form (not currently live)
 │   └── ...
-├── scripts/                # Build scripts
-│   └── generate-hidden-form.js  # Auto-generates hidden form for Netlify
-└── README.md               # This file
+├── scripts/                 # Build scripts
+│   └── generate-hidden-form.js  # Auto-generates hidden form for Netlify (skips if no active form)
+└── README.md                # This file
 ```
+
+Each past workshop year gets its own folder under `archive/`, following the same pattern as `archive/2026/`: a full copy of that year's site with registration closed, the mailing-list signup removed, and payment QR codes stripped, plus a card added to `archive/index.html`. When the next year's registration is ready to go live, root `index.html`, `components/`, and `script.js` are the starting template.
 
 ## Notes
 
-- The form uses Netlify Forms which requires no backend code
+- The mailing-list form on the teaser uses Netlify Forms which requires no backend code
 - All form submissions will be available in your Netlify dashboard
 - The site is fully responsive and works on all devices
-- **Form editing**: Only edit `components/register.html` - the hidden form in `index.html` is auto-generated during builds
+- **Form editing**: Only edit `components/register.html` - the hidden form in `index.html` is auto-generated during builds, once a registration form is live again
 - Update the workshop dates and details in the component files as needed

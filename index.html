@@ -3,77 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CNIMA USA - Accordion Workshop in New Orleans. Learn from world-renowned master accordionists Jacques Mornet, Nathalie Boucheix, and more.">
-    <title>CNIMA USA - Accordion Workshop New Orleans 2026</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="description" content="CNIMA USA's next Accordion Workshop in New Orleans returns May 3-8 and May 10-15, 2027. Join the mailing list to be the first to know when registration opens.">
+    <title>CNIMA USA - Accordion Workshop New Orleans 2027</title>
+    <link rel="stylesheet" href="styles-2027.css">
 </head>
 <body>
-            <!-- 
-                Hidden form for Netlify to detect at build time. 
-                AUTO-GENERATED from components/register.html - DO NOT EDIT MANUALLY 
-                Run: node scripts/generate-hidden-form.js 
-            --> 
-            <form name="registration" method="POST" netlify netlify-honeypot="bot-field" style="display: none;" action="/success.html"> 
-            <input type="hidden" name="form-name" value="registration" /> 
-                <input name="bot-field" /> 
-                <input type="hidden" name="subject" value="CNIMA USA New Registration (2026)" /> 
-                <input name="firstName" /> 
-                <input name="lastName" /> 
-                <input type="email" name="email" /> 
-                <input name="phone" /> 
-                <input name="address" /> 
-                <input name="city" /> 
-                <input name="state" /> 
-                <input name="postcode" /> 
-                <input name="country" /> 
-                <select name="skillLevel"> 
-                    <option value="beginner">beginner</option> 
-                    <option value="intermediate">intermediate</option> 
-                    <option value="advanced">advanced</option> 
-                    <option value="professional">professional</option> 
-                </select> 
-                <select name="workshop"> 
-                    <option value="workshop1">workshop1</option> 
-                    <option value="workshop2">workshop2</option> 
-                    <option value="both">both</option> 
-                </select> 
-                <select name="paymentOption"> 
-                    <option value="earlybird">earlybird</option> 
-                    <option value="full">full</option> 
-                </select> 
-                <select name="paymentMethod"> 
-                    <option value="zelle">zelle</option> 
-                    <option value="venmo">venmo</option> 
-                    <option value="paypal">paypal</option> 
-                </select> 
-                <input name="howDidYouHear" /> 
-                <textarea name="message"></textarea> 
-            </form>
-    
-    <!-- 
-        Hidden mailing list form for Netlify to detect at build time.
-        This ensures Netlify can detect the form fields at build time.
-        Note: This form is hidden and only used for Netlify detection.
-        The actual form submission comes from the visible form in contact.html
-    -->
-    <!-- Hidden form for Netlify detection only - not for submission -->
-    <form name="mailing-list-detection" method="POST" netlify netlify-honeypot="bot-field" style="display: none !important; position: absolute; left: -9999px; pointer-events: none;">
-        <input type="hidden" name="form-name" value="mailing-list" />
-        <input name="bot-field" />
-        <input type="email" name="email" />
-    </form>
-    
-    <!-- Components will be loaded here -->
-    <div id="nav-container"></div>
-    <div id="hero-container"></div>
-    <div id="about-container"></div>
-    <div id="teachers-container"></div>
-    <div id="workshop-container"></div>
-    <div id="register-container"></div>
-    <div id="contact-container"></div>
-    <div id="footer-container"></div>
 
-    <script src="components/loader.js"></script>
-    <script src="script.js"></script>
+    <nav class="nav">
+        <div class="container">
+            <a href="/" class="logo">
+                <img src="/assets/images/cnima-logo.jpg" alt="CNIMA USA" class="logo-img">
+            </a>
+            <div class="nav-links">
+                <a href="/archive/">Archive</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-copy">
+                <span class="hero-eyebrow">Save the Date</span>
+                <h1 class="hero-title">CNIMA USA<br>Accordion Workshop</h1>
+                <h2 class="hero-subtitle">New Orleans &middot; May 3&ndash;8 &amp; May 10&ndash;15, 2027</h2>
+                <p class="hero-description">The next CNIMA USA Accordion Workshop returns for two weeks in May. Teachers and registration details are coming soon &mdash; join the mailing list so you're the first to know.</p>
+                <div class="hero-actions">
+                    <a href="#signup" class="btn btn-primary">Notify Me</a>
+                    <a href="/archive/" class="btn btn-secondary">See Past Workshops</a>
+                </div>
+            </div>
+            <div class="hero-image-wrap">
+                <img src="/assets/images/2027/CNIMA2027_background1.png" alt="An illustrated alligator playing the accordion, surrounded by musical notes">
+            </div>
+        </div>
+    </section>
+
+    <section class="wood-section">
+        <div class="container">
+            <img src="/assets/images/2027/CNIMA2027_background2.png" alt="An illustrated accordion resting on wooden planks, surrounded by musical notes">
+            <div class="wood-card">
+                <h2>New Orleans, one more time</h2>
+                <p>CNIMA USA keeps bringing world-class accordion instruction to New Orleans, with two workshop weeks to choose from:</p>
+                <ul>
+                    <li>Week 1: May 3&ndash;8, 2027</li>
+                    <li>Week 2: May 10&ndash;15, 2027</li>
+                </ul>
+                <p>Teachers, venue, and registration details will be announced here as they're finalized.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="signup-section" id="signup">
+        <div class="container">
+            <h2>Be the first to know</h2>
+            <p class="lead">Sign up and we'll email you as soon as registration opens for the 2027 workshop.</p>
+            <div class="signup-card">
+                <form name="mailing-list" method="POST" netlify netlify-honeypot="bot-field" action="/mailing-list-success.html" class="mailing-list-form" data-netlify="true">
+                    <input type="hidden" name="form-name" value="mailing-list" />
+                    <p class="hidden">
+                        <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+                    </p>
+                    <div class="mailing-list-input-group">
+                        <input type="email" name="email" placeholder="Enter your email address" required>
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2027 CNIMA USA. All rights reserved.</p>
+        </div>
+    </footer>
+
 </body>
 </html>

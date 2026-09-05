@@ -1,0 +1,64 @@
+<!-- Teacher Bios -->
+<section id="teachers" class="section section-alt">
+    <div class="container">
+        <h2 class="section-title">Our Master Teachers</h2>
+        <div class="about-content" id="teachers-container">
+            <!-- Teacher bios will be loaded here -->
+        </div>
+    </div>
+</section>
+
+<script>
+// Load individual teacher bios
+(async function() {
+    // Wait for the container to be available
+    let teachersContainer = document.getElementById('teachers-container');
+    let retries = 0;
+    while (!teachersContainer && retries < 50) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+        teachersContainer = document.getElementById('teachers-container');
+        retries++;
+    }
+    
+    if (!teachersContainer) {
+        console.error('Teachers container not found');
+        return;
+    }
+
+    const teachers = ['jacques', 'nathalie', 'jibe'];
+    
+    // Clear existing content to prevent duplicates on reload
+    teachersContainer.innerHTML = '';
+    
+    try {
+        // Add cache-busting parameter for development
+        const cacheBuster = `?t=${Date.now()}`;
+        const bios = await Promise.all(
+            teachers.map(name => 
+                fetch(`components/teachers/${name}.html${cacheBuster}`, {
+                    cache: 'no-store'
+                })
+                    .then(res => res.ok ? res.text() : '')
+                    .catch(err => {
+                        console.error(`Error loading ${name}.html:`, err);
+                        return '';
+                    })
+            )
+        );
+
+        bios.forEach(html => {
+            if (html) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html.trim();
+                const bioElement = tempDiv.firstElementChild;
+                if (bioElement) {
+                    teachersContainer.appendChild(bioElement);
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error loading teacher bios:', error);
+    }
+})();
+</script>
+
