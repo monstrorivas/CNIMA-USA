@@ -24,6 +24,15 @@ function debugLog(...args) {
 const registerPath = path.join(__dirname, '../components/register.html');
 const indexPath = path.join(__dirname, '../index.html');
 
+// No active registration form to sync yet (e.g. a teaser homepage ahead of the
+// next workshop's registration opening) - skip instead of failing the build.
+const indexHasHiddenFormMarker = fs.existsSync(indexPath) &&
+    /<!--\s*\n\s*Hidden form/.test(fs.readFileSync(indexPath, 'utf8'));
+if (!fs.existsSync(registerPath) || !indexHasHiddenFormMarker) {
+    console.log('ℹ️  No active registration form to sync — skipping hidden form generation');
+    process.exit(0);
+}
+
 // Read register.html
 const registerContent = fs.readFileSync(registerPath, 'utf8');
 

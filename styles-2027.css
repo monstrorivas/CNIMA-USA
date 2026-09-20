@@ -1,0 +1,436 @@
+/* CNIMA USA - 2027 Teaser Styles
+   One continuous deep-navy canvas (New Orleans after dark) rather than
+   equal-weight color stripes. Gold is the one primary interactive color;
+   red is used sparingly, as a single deliberate accent, not a whole
+   section. No pastels. */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #0E2A3F;
+    --bg-elevated: #163B54;
+    --bg-deep: #081A28;
+    --gold: #F3B120;
+    --gold-deep: #C2851E;
+    --red: #CF2330;
+    --red-deep: #A81C26;
+    --cream: #F7F1E3;
+    --muted: rgba(247, 241, 227, 0.72);
+    --white: #FFFFFF;
+    --text-dark: #12262B;
+    --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.7;
+    color: var(--cream);
+    background-color: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+a {
+    color: var(--gold);
+}
+
+/* Nav */
+.nav {
+    padding: 1.5rem 0;
+}
+
+.nav .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    background: var(--white);
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 10px;
+}
+
+.logo-img {
+    height: 44px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.nav-links a {
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--cream);
+    border-bottom: 2px solid var(--red);
+    padding-bottom: 2px;
+}
+
+.nav-links a:hover {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+}
+
+/* Buttons - default styling assumes a light (cream/white) surface */
+.btn {
+    display: inline-block;
+    padding: 0.9rem 1.8rem;
+    border-radius: 999px;
+    font-weight: 800;
+    text-decoration: none;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: var(--red);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--red-deep);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--cream);
+    border-color: var(--cream);
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Hero */
+.hero {
+    padding: 4rem 0 4.5rem;
+    text-align: center;
+}
+
+.hero-container {
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.hero-eyebrow {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--text-dark);
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    margin-bottom: 1.25rem;
+}
+
+.hero-title {
+    font-size: 2.75rem;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    color: var(--white);
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--gold);
+    margin-bottom: 1.25rem;
+}
+
+.hero-description {
+    font-size: 1.05rem;
+    margin: 0 auto 2rem;
+    max-width: 46ch;
+    color: var(--muted);
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* Primary button on the dark hero needs gold, not red (red barely
+   shows up against this background - checked contrast: ~1.8:1). */
+.hero .btn-primary {
+    background: var(--gold);
+    color: var(--text-dark);
+}
+
+.hero .btn-primary:hover {
+    background: var(--gold-deep);
+}
+
+/* Dates */
+.dates-section {
+    padding: 3rem 0 4rem;
+    text-align: center;
+}
+
+.dates-section h2 {
+    color: var(--white);
+    margin-bottom: 0.5rem;
+}
+
+.dates-lead {
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+}
+
+.dates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(220px, 320px));
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.ticket {
+    background: var(--bg-elevated);
+    border: 3px solid var(--gold);
+    border-radius: 16px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: var(--shadow);
+}
+
+.ticket-red {
+    border-color: var(--red);
+}
+
+.ticket-label {
+    display: inline-block;
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: var(--gold);
+    color: var(--text-dark);
+}
+
+.ticket-red .ticket-label {
+    background: var(--red);
+    color: var(--white);
+}
+
+.ticket-dates {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--white);
+}
+
+.dates-footnote {
+    margin-top: 2rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+/* Photo band */
+.photo-band {
+    position: relative;
+    background: url('/assets/images/jacques-format-paysage.jpg') center/cover no-repeat;
+    padding: 5rem 0;
+}
+
+.photo-band-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(14, 42, 63, 0.8);
+}
+
+.photo-band .container {
+    position: relative;
+    z-index: 2;
+}
+
+.photo-band-quote {
+    font-size: 1.4rem;
+    font-style: italic;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+    color: var(--cream);
+}
+
+/* Signup */
+.signup-section {
+    background: var(--bg-elevated);
+    padding: 4.5rem 0 5rem;
+}
+
+.signup-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.signup-card {
+    background: var(--cream);
+    color: var(--text-dark);
+    border: 3px solid var(--gold);
+    border-radius: 20px;
+    padding: 2.5rem;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.signup-card h2 {
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.signup-card .lead {
+    color: rgba(18, 38, 43, 0.75);
+}
+
+.mailing-list-input-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1.25rem;
+}
+
+.mailing-list-input-group input[type="email"] {
+    flex: 1;
+    min-width: 220px;
+    padding: 0.85rem 1.1rem;
+    border-radius: 999px;
+    border: 2px solid var(--bg);
+    font-size: 1rem;
+    font-family: inherit;
+    background: var(--white);
+}
+
+.mailing-list-input-group input[type="email"]:focus {
+    outline: 2px solid var(--red-deep);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Archive hub */
+.archive-hero {
+    padding: 3.5rem 0 3rem;
+    text-align: center;
+}
+
+.archive-hero h1 {
+    color: var(--white);
+}
+
+.archive-hero .lead {
+    max-width: 55ch;
+    margin: 0.75rem auto 0;
+    color: var(--muted);
+}
+
+.archive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0 5rem;
+}
+
+.archive-card {
+    background: var(--cream);
+    color: var(--text-dark);
+    border: 3px solid var(--gold);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+.archive-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.archive-card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.archive-card-body h3 {
+    color: var(--text-dark);
+}
+
+.archive-card-body p {
+    color: rgba(18, 38, 43, 0.75);
+}
+
+.archive-card-body .btn {
+    align-self: flex-start;
+    margin-top: auto;
+}
+
+/* Footer */
+.footer {
+    background: var(--bg-deep);
+    color: var(--muted);
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.footer a {
+    color: var(--gold);
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.1rem;
+    }
+
+    .dates-grid {
+        grid-template-columns: minmax(220px, 320px);
+    }
+}
+
+@media (max-width: 480px) {
+    .signup-card {
+        padding: 1.75rem;
+    }
+
+    .mailing-list-input-group {
+        flex-direction: column;
+    }
+}

@@ -1,0 +1,293 @@
+// Initialize all scripts after components are loaded
+function initializeScripts() {
+    // Smooth scrolling for anchor links (using event delegation)
+    // Only intercept links that start with # (internal anchors), not mailto:, http:, etc.
+    document.addEventListener('click', function(e) {
+        const anchor = e.target.closest('a');
+        if (!anchor) return;
+        
+        const href = anchor.getAttribute('href');
+        if (!href) return;
+        
+        // Explicitly allow mailto, tel, http, https links to work normally - don't interfere at all
+        if (href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('http://') || href.startsWith('https://')) {
+            return; // Let the browser handle these links normally - don't prevent default
+        }
+        
+        // Only handle internal anchor links (starting with #)
+        if (href.startsWith('#')) {
+            e.preventDefault();
+            e.stopPropagation();
+            const target = document.querySelector(href);
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+    });
+
+    // Form submission handling
+    function checkAndShowSuccess() {
+        const form = document.querySelector('form[name="registration"]');
+        const formSuccess = document.getElementById('form-success');
+
+        // Check on page load if we're coming back from a successful submission
+        // Check both window.location.search (query before hash) and hash (query after hash)
+        const urlParams = new URLSearchParams(window.location.search);
+        const hash = window.location.hash;
+        const hashParams = hash.includes('?') ? new URLSearchParams(hash.split('?')[1]) : null;
+        
+        const isSuccess = urlParams.get('success') === 'true' || 
+                         (hashParams && hashParams.get('success') === 'true');
+        
+        if (isSuccess && form && formSuccess) {
+            console.log('Showing success message');
+            form.classList.add('hidden');
+            formSuccess.classList.remove('hidden');
+            // Scroll to register section (not just the success message) after components are loaded
+            setTimeout(() => {
+                const registerSection = document.getElementById('register');
+                if (registerSection) {
+                    registerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    // Fallback: scroll to success message
+                    formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 400);
+            return true; // Successfully showed
+        }
+        return false; // Elements not ready yet
+    }
+    
+    // Check multiple times to ensure component is loaded
+    let attempts = 0;
+    const maxAttempts = 10;
+    const checkInterval = setInterval(() => {
+        attempts++;
+        if (checkAndShowSuccess() || attempts >= maxAttempts) {
+            clearInterval(checkInterval);
+        }
+    }, 100);
+    
+    // Also check when hash changes (in case user navigates to #register?success=true)
+    window.addEventListener('hashchange', checkAndShowSuccess);
+    
+    // Let Netlify handle form submission naturally
+    // Don't prevent default - let it submit to Netlify
+    
+    // Mailing list form handling - same pattern as registration form
+    function checkMailingListSuccess() {
+        const mailingListForm = document.querySelector('form[name="mailing-list"]');
+        const mailingListSuccess = document.getElementById('mailing-list-success');
+        
+        // Check on page load if we're coming back from a successful subscription
+        // Check both window.location.search (query before hash) and hash (query after hash)
+        const urlParams = new URLSearchParams(window.location.search);
+        const hash = window.location.hash;
+        const hashParams = hash.includes('?') ? new URLSearchParams(hash.split('?')[1]) : null;
+        
+        const isSubscribed = urlParams.get('subscribed') === 'true' || 
+                           (hashParams && hashParams.get('subscribed') === 'true');
+        
+        if (isSubscribed && mailingListForm && mailingListSuccess) {
+            mailingListForm.classList.add('hidden');
+            mailingListSuccess.classList.remove('hidden');
+            // Scroll to contact section (not just the success message) after components are loaded
+            setTimeout(() => {
+                const contactSection = document.getElementById('contact');
+                if (contactSection) {
+                    contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    // Fallback: scroll to success message
+                    mailingListSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 400);
+            return true; // Successfully showed
+        }
+        return false; // Elements not ready yet
+    }
+    
+    // Check multiple times to ensure component is loaded
+    let mailingListAttempts = 0;
+    const maxMailingListAttempts = 10;
+    const mailingListCheckInterval = setInterval(() => {
+        mailingListAttempts++;
+        if (checkMailingListSuccess() || mailingListAttempts >= maxMailingListAttempts) {
+            clearInterval(mailingListCheckInterval);
+        }
+    }, 100);
+    
+    // Also check when hash changes (in case user navigates to #contact?subscribed=true)
+    window.addEventListener('hashchange', checkMailingListSuccess);
+
+    // Add active state to navigation links on scroll
+    function updateActiveNav() {
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-links a');
+        
+        let current = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (window.pageYOffset >= sectionTop - 200) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    }
+
+    window.addEventListener('scroll', updateActiveNav);
+    updateActiveNav(); // Initial check
+
+    // Format phone number input
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.length <= 3) {
+                    value = `(${value}`;
+                } else if (value.length <= 6) {
+                    value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
+                } else {
+                    value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6, 10)}`;
+                }
+            }
+            e.target.value = value;
+        });
+    }
+
+    // Format date of birth input
+    const dobInput = document.getElementById('dateOfBirth');
+    if (dobInput) {
+        dobInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = `${value.slice(0, 2)}/${value.slice(2)}`;
+            }
+            if (value.length >= 5) {
+                value = `${value.slice(0, 5)}/${value.slice(5, 9)}`;
+            }
+            e.target.value = value;
+        });
+    }
+
+    // Workshop payment option handler - update prices when "Both" is selected
+    // Use event delegation to handle dynamically loaded components
+    if (!window.workshopPaymentHandlerInitialized) {
+        // Store original payment options
+        const originalOptions = {
+            earlybird: {
+                value: 'earlybird',
+                text: '$675 Early Bird (if paid by January 15, 2025)'
+            },
+            full: {
+                value: 'full',
+                text: '$799 Full Tuition (if paid after January 15, 2025)'
+            }
+        };
+        
+        const doubleOptions = {
+            earlybird: {
+                value: 'earlybird',
+                text: '$1,350 Early Bird (if paid by January 15, 2025)'
+            },
+            full: {
+                value: 'full',
+                text: '$1,598 Full Tuition (if paid after January 15, 2025)'
+            }
+        };
+        
+        function updatePaymentOptions(workshopSelect, paymentOptionSelect) {
+            if (!workshopSelect || !paymentOptionSelect) {
+                return;
+            }
+            
+            const selectedWorkshop = workshopSelect.value;
+            const currentPaymentValue = paymentOptionSelect.value;
+            
+            // Clear all existing options
+            paymentOptionSelect.innerHTML = '';
+            
+            // Add the "Select..." option first
+            const selectOption = document.createElement('option');
+            selectOption.value = '';
+            selectOption.textContent = 'Select...';
+            paymentOptionSelect.appendChild(selectOption);
+            
+            // Determine which options to use
+            const optionsToUse = selectedWorkshop === 'both' ? doubleOptions : originalOptions;
+            
+            // Add the appropriate options
+            Object.values(optionsToUse).forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.text;
+                paymentOptionSelect.appendChild(optionElement);
+            });
+            
+            // Try to restore the previous selection if it still exists
+            if (currentPaymentValue && (currentPaymentValue === 'earlybird' || currentPaymentValue === 'full')) {
+                paymentOptionSelect.value = currentPaymentValue;
+            } else {
+                paymentOptionSelect.value = '';
+            }
+        }
+        
+        // Use event delegation on the document to catch changes to workshop select
+        document.addEventListener('change', function(e) {
+            if (e.target && e.target.id === 'workshop') {
+                const workshopSelect = e.target;
+                const paymentOptionSelect = document.getElementById('paymentOption');
+                if (paymentOptionSelect) {
+                    updatePaymentOptions(workshopSelect, paymentOptionSelect);
+                }
+            }
+        });
+        
+        // Initialize payment options when elements become available
+        function tryInitializePaymentOptions() {
+            const workshopSelect = document.getElementById('workshop');
+            const paymentOptionSelect = document.getElementById('paymentOption');
+            
+            if (workshopSelect && paymentOptionSelect) {
+                updatePaymentOptions(workshopSelect, paymentOptionSelect);
+                return true;
+            }
+            return false;
+        }
+        
+        // Try to initialize immediately and with retries
+        let attempts = 0;
+        const maxAttempts = 30;
+        const initInterval = setInterval(() => {
+            attempts++;
+            if (tryInitializePaymentOptions() || attempts >= maxAttempts) {
+                clearInterval(initInterval);
+            }
+        }, 200);
+        
+        window.workshopPaymentHandlerInitialized = true;
+    }
+}
+
+// If components are already loaded (fallback for direct access)
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wait a bit for components to load
+        setTimeout(initializeScripts, 100);
+    });
+} else {
+    // DOM already loaded, wait for components
+    setTimeout(initializeScripts, 100);
+}
+
