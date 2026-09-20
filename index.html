@@ -21,43 +21,48 @@
     </nav>
 
     <section class="hero">
-        <div class="container">
-            <div class="hero-copy">
-                <span class="hero-eyebrow">Save the Date</span>
-                <h1 class="hero-title">CNIMA USA<br>Accordion Workshop</h1>
-                <h2 class="hero-subtitle">New Orleans &middot; May 3&ndash;8 &amp; May 10&ndash;15, 2027</h2>
-                <p class="hero-description">The next CNIMA USA Accordion Workshop returns for two weeks in May. Teachers and registration details are coming soon &mdash; join the mailing list so you're the first to know.</p>
-                <div class="hero-actions">
-                    <a href="#signup" class="btn btn-primary">Notify Me</a>
-                    <a href="/archive/" class="btn btn-secondary">See Past Workshops</a>
-                </div>
-            </div>
-            <div class="hero-image-wrap">
-                <img src="/assets/images/2027/CNIMA2027_background1.png" alt="An illustrated alligator playing the accordion, surrounded by musical notes">
+        <div class="container hero-container">
+            <span class="hero-eyebrow">Save the Date</span>
+            <h1 class="hero-title">CNIMA USA<br>Accordion Workshop</h1>
+            <h2 class="hero-subtitle">New Orleans &middot; May 3&ndash;8 &amp; May 10&ndash;15, 2027</h2>
+            <p class="hero-description">The next CNIMA USA Accordion Workshop returns for two weeks in May. Teachers and registration details are coming soon &mdash; join the mailing list so you're the first to know.</p>
+            <div class="hero-actions">
+                <a href="#signup" class="btn btn-primary">Notify Me</a>
+                <a href="/archive/" class="btn btn-ghost">See Past Workshops</a>
             </div>
         </div>
     </section>
 
-    <section class="wood-section">
+    <section class="dates-section">
         <div class="container">
-            <img src="/assets/images/2027/CNIMA2027_background2.png" alt="An illustrated accordion resting on wooden planks, surrounded by musical notes">
-            <div class="wood-card">
-                <h2>New Orleans, one more time</h2>
-                <p>CNIMA USA keeps bringing world-class accordion instruction to New Orleans, with two workshop weeks to choose from:</p>
-                <ul>
-                    <li>Week 1: May 3&ndash;8, 2027</li>
-                    <li>Week 2: May 10&ndash;15, 2027</li>
-                </ul>
-                <p>Teachers, venue, and registration details will be announced here as they're finalized.</p>
+            <h2>Two Weeks in May</h2>
+            <p class="dates-lead">Sign up for either week, or both.</p>
+            <div class="dates-grid">
+                <div class="ticket ticket-gold">
+                    <span class="ticket-label">Week 1</span>
+                    <span class="ticket-dates">May 3&ndash;8, 2027</span>
+                </div>
+                <div class="ticket ticket-red">
+                    <span class="ticket-label">Week 2</span>
+                    <span class="ticket-dates">May 10&ndash;15, 2027</span>
+                </div>
             </div>
+            <p class="dates-footnote">Teachers, venue, and registration details will be announced here as they're finalized.</p>
+        </div>
+    </section>
+
+    <section class="photo-band">
+        <div class="photo-band-overlay"></div>
+        <div class="container">
+            <p class="photo-band-quote">Thirty years of world-class accordion instruction &mdash; now returning to New Orleans.</p>
         </div>
     </section>
 
     <section class="signup-section" id="signup">
-        <div class="container">
-            <h2>Be the first to know</h2>
-            <p class="lead">Sign up and we'll email you as soon as registration opens for the 2027 workshop.</p>
+        <div class="container signup-layout">
             <div class="signup-card">
+                <h2>Be the first to know</h2>
+                <p class="lead">Sign up and we'll email you as soon as registration opens for the 2027 workshop.</p>
                 <form name="mailing-list" method="POST" netlify netlify-honeypot="bot-field" action="/mailing-list-success.html" class="mailing-list-form" data-netlify="true">
                     <input type="hidden" name="form-name" value="mailing-list" />
                     <p class="hidden">
