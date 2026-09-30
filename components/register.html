@@ -1,12 +1,12 @@
 <!-- Registration Form -->
-<section id="register" class="section">
+<section id="register" class="section section-elevated">
     <div class="container">
-        <h2 class="section-title">Registration</h2>
-        <p class="section-subtitle">To register, please fill out the form below and click the "Submit Registration" button. Then, please send a payment using any of the <a href="#payment" style="color: var(--accent-color); text-decoration: underline;">methods above</a>.</p>
-        
-        <form name="registration" method="POST" netlify netlify-honeypot="bot-field" action="/success.html" class="registration-form" data-netlify="true">
+        <h2 class="section-title centered">Registration</h2>
+        <p class="section-subtitle">Fill out the form below to reserve your spot. You'll pay securely by card or PayPal right here on this page immediately after submitting &mdash; no need to leave the site.</p>
+
+        <form id="registration-form" name="registration" method="POST" netlify netlify-honeypot="bot-field" data-netlify="true" class="registration-form">
             <input type="hidden" name="form-name" value="registration" />
-            <input type="hidden" name="subject" value="CNIMA USA New Registration (2026)" />
+            <input type="hidden" name="subject" value="CNIMA USA New Registration (2027)" />
             <p class="hidden">
                 <label>Don't fill this out if you're human: <input name="bot-field" /></label>
             </p>
@@ -68,31 +68,22 @@
             </div>
 
             <div class="form-group">
-                <label for="workshop">Workshop *</label>
-                <select id="workshop" name="workshop" required>
+                <label for="workshopSelect">Workshop *</label>
+                <select id="workshopSelect" name="workshop" required>
                     <option value="">Select...</option>
-                    <option value="workshop1">Workshop 1: May 4–9, 2026</option>
-                    <option value="workshop2">Workshop 2: May 11-16, 2026</option>
-                    <option value="both">Both</option>
+                    <option value="week1">Week 1: May 3&ndash;8, 2027</option>
+                    <option value="week2">Week 2: May 10&ndash;15, 2027</option>
+                    <option value="both">Both Weeks</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="paymentOption">Payment Option</label>
+                <label for="paymentOption">Payment Option *</label>
                 <select id="paymentOption" name="paymentOption" required>
                     <option value="">Select...</option>
-                    <option value="earlybird">$675 Early Bird (if paid by January 15, 2025)</option>
-                    <option value="full">$799 Full Tuition (if paid after January 15, 2025)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="paymentMethod">Payment Method</label>
-                <select id="paymentMethod" name="paymentMethod" required>
-                    <option value="">Select...</option>
-                    <option value="zelle">Zelle (No fees)</option>
-                    <option value="venmo">Venmo (3.5% fee applies)</option>
-                    <option value="paypal">PayPal (3.5% fee applies)</option>
+                    <!-- TODO: confirm 2027 pricing/cutoff date - keep in sync with components/workshop.html and netlify/functions/_shared/workshop-2027.js -->
+                    <option value="earlybird">Early Bird (if paid by January 15, 2027)</option>
+                    <option value="full">Full Tuition</option>
                 </select>
             </div>
 
@@ -107,14 +98,31 @@
             </div>
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary btn-large">Submit Registration</button>
+                <button type="submit" class="btn btn-primary btn-large" id="registration-submit">Continue to Payment</button>
             </div>
+
+            <p id="registration-error" class="registration-error hidden">Something went wrong submitting your registration. Please try again, or email <a href="mailto:cnimausa@gmail.com">cnimausa@gmail.com</a>.</p>
         </form>
 
+        <div id="payment-step" class="payment-step hidden">
+            <h3>Complete Your Payment</h3>
+            <p id="payment-amount-display" class="payment-amount"></p>
+            <div class="payment-methods">
+                <div class="payment-method-card">
+                    <h4>Pay by Card</h4>
+                    <div id="stripe-checkout-container"></div>
+                </div>
+                <div class="payment-method-card">
+                    <h4>Pay with PayPal</h4>
+                    <div id="paypal-button-container"></div>
+                </div>
+            </div>
+            <p id="payment-unavailable" class="payment-unavailable hidden">Online payment isn't available in this preview yet &mdash; your registration has been received, and we'll follow up by email about payment.</p>
+        </div>
+
         <div id="form-success" class="form-success hidden">
-            <h3>Thank you for your registration!</h3>
-            <p>You should receive a confirmation email shortly. Please don't forget to submit your payment using any of the <a href="#payment" style="color: var(--accent-color); text-decoration: underline;">methods above</a>.</p>
+            <h3>You're Registered!</h3>
+            <p>Thank you for registering and completing payment. You should receive a confirmation email shortly.</p>
         </div>
     </div>
 </section>
-

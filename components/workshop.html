@@ -1,8 +1,7 @@
 <!-- Workshop Details -->
-<section id="workshop" class="section section-alt section-with-bg" style="background-image: url('assets/images/CNIMA_school_wider.jpg');">
-    <div class="section-bg-overlay"></div>
+<section id="workshop" class="section">
     <div class="container">
-        <h2 class="section-title">Workshop Details</h2>
+        <h2 class="section-title centered">Workshop Details</h2>
         <div class="workshop-grid">
             <div class="workshop-card">
                 <h3>What You'll Learn</h3>
@@ -25,13 +24,12 @@
             </div>
             <div class="workshop-card">
                 <h3>When</h3>
-                <p>Two workshops available in 2026</p>
+                <p>Two workshop weeks available in 2027</p>
                 <ul>
-                    <li>Workshop 1: May 4–9, 2026</li>
-                    <li>Workshop 2: May 11-16, 2026</li>
+                    <li>Week 1: May 3&ndash;8, 2027 &mdash; with Jacques Mornet &amp; Nathalie Boucheix</li>
+                    <li>Week 2: May 10&ndash;15, 2027 &mdash; with Jacques Mornet, Nathalie Boucheix &amp; Franck Angélis</li>
                 </ul>
-                <p>Sign up for either workshop or both!</p>
-                
+                <p>Sign up for either week or both!</p>
             </div>
             <div class="workshop-card">
                 <h3>Venue</h3>
@@ -42,45 +40,32 @@
                 </p>
                 <p style="margin-top: 0.75rem;">
                     <strong>Phone:</strong>
-                    <a href="tel:504-522-0187" style="color: var(--accent-color); text-decoration: none;">504-522-0187</a>
+                    <a href="tel:504-522-0187">504-522-0187</a>
                 </p>
                 <div style="margin-top: 1rem;">
-                    <img src="assets/images/Maison St Charles.jpeg" alt="Maison St. Charles Hotel" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <img src="assets/images/Maison St Charles.jpeg" alt="Maison St. Charles Hotel" class="workshop-card-image">
                 </div>
             </div>
             <div class="workshop-card">
                 <h3>Lodging</h3>
-                <p><strong>Maison St. Charles</strong>(same as the workshop venue)</p>
-                <p style="margin-top: 0.75rem;">We’ve negotiated special rates. Scan the QR code or click the button below to book your room.</p>
-                <p class="note" style="margin-top: 0.75rem;">Other options and airbnbs are also available in the neighborhood</p>
+                <p><strong>Maison St. Charles</strong> (same as the workshop venue)</p>
+                <p style="margin-top: 0.75rem;">We've negotiated special rates. Scan the QR code or click the button below to book your room.</p>
+                <p class="note" style="margin-top: 0.75rem;">Other options and Airbnbs are also available in the neighborhood.</p>
                 <div style="text-align: center; margin-top: 1rem;">
                     <img src="assets/images/Venue_QR_code.png" alt="Reservation QR Code" style="max-width: 150px; height: auto; border-radius: 8px;">
                 </div>
                 <p style="margin-top: 1rem; text-align: center;">
-                    <a href="https://reservations.hotelspreference.com/?adult=1&arrive=2026-05-04&chain=5460&child=0&config=GROUPMSC&currency=USD&depart=2026-05-16&group=CNIMA050426&hotel=96163&level=hotel&locale=en-US&productcurrency=USD&rooms=1&theme=GROUPMSC" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="display: inline-block; margin-bottom: 1rem;">Book Your Room</a>
+                    <!-- TODO: confirm 2027 booking dates/group code with the hotel before launch -->
+                    <a href="https://reservations.hotelspreference.com/?adult=1&arrive=2027-05-03&chain=5460&child=0&config=GROUPMSC&currency=USD&depart=2027-05-15&group=CNIMA050426&hotel=96163&level=hotel&locale=en-US&productcurrency=USD&rooms=1&theme=GROUPMSC" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your Room</a>
                 </p>
             </div>
-            <div class="workshop-card" id="payment">
-                <h3>Payment</h3>
-                <p>Early Bird: $675 (if paid by January 15, 2025)</p>
-                <p>Full Tuition: $799 (if paid after January 15, 2025)</p>
-                <p>Payment methods:</p>
-                <div style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-around; gap: 1rem; margin-top: 1rem;">
-                    <div style="text-align: center; flex: 1; min-width: 100px;">
-                        <p style="font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Zelle</p>
-                        <img src="assets/images/zelle_QR_code.png" alt="Zelle QR Code" style="max-width: 120px; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    </div>
-                    <div style="text-align: center; flex: 1; min-width: 100px;">
-                        <p style="font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Venmo</p>
-                        <img src="assets/images/Venmo QR Code.png" alt="Venmo QR Code" style="max-width: 120px; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    </div>
-                    <div style="text-align: center; flex: 1; min-width: 100px;">
-                        <p style="font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">PayPal</p>
-                        <img src="assets/images/PayPal QR Code.png" alt="PayPal QR Code" style="max-width: 120px; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    </div>
-                </div>
+            <div class="workshop-card" id="pricing">
+                <h3>Pricing</h3>
+                <!-- TODO: confirm 2027 pricing and early-bird cutoff date; keep in sync with components/register.html and netlify/functions/_shared/workshop-2027.js -->
+                <p>Early Bird: $675 per week (if paid by January 15, 2027)</p>
+                <p>Full Tuition: $799 per week (if paid after January 15, 2027)</p>
+                <p style="margin-top: 0.75rem;">Pay securely by card or PayPal right on this page &mdash; you'll complete payment immediately after submitting the <a href="#register">registration form below</a>.</p>
             </div>
         </div>
     </div>
 </section>
-
