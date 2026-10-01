@@ -11,6 +11,10 @@ build/
 .env
 .env.local
 
+# Google Cloud service account keys - never commit these
+*-firebase-adminsdk-*.json
+*.serviceaccount.json
+
 # OS files
 .DS_Store
 Thumbs.db

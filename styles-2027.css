@@ -544,7 +544,7 @@ a {
 /* Inline payment step + success state */
 .payment-step,
 .form-success {
-    max-width: 640px;
+    max-width: 680px;
     margin: 2rem auto 0;
     background: var(--cream);
     color: var(--text-dark);
@@ -570,8 +570,8 @@ a {
 
 .payment-methods {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 2rem;
     text-align: left;
 }
 
@@ -585,6 +585,31 @@ a {
 .payment-method-card h4 {
     margin-bottom: 0.75rem;
     color: var(--text-dark);
+}
+
+.payment-methods-divider {
+    position: relative;
+    text-align: center;
+    margin: -0.75rem 0;
+}
+
+.payment-methods-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--bg-elevated);
+}
+
+.payment-methods-divider span {
+    position: relative;
+    background: var(--cream);
+    padding: 0 1rem;
+    font-weight: 700;
+    color: rgba(18, 38, 43, 0.6);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
 }
 
 .payment-unavailable {

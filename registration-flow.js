@@ -4,24 +4,29 @@
 // navigates away from the page: the form submits via fetch, and Stripe/
 // PayPal render inline once Netlify confirms the registration.
 
-// ---- Pricing shown to the user. Keep this in sync with the text in
-// components/workshop.html, components/register.html, and the
-// authoritative server-side prices in netlify/functions/_shared/workshop-2027.js
-// once that exists. Amounts are in whole US dollars.
+// ---- Pricing shown to the user, for display only. The authoritative
+// amount actually charged comes from netlify/functions/_shared/workshop-2027.js
+// server-side - keep both in sync when pricing changes. Amounts are in
+// whole US dollars.
 const WORKSHOP_PRICING = {
     week1: { earlybird: 675, full: 799 },
     week2: { earlybird: 675, full: 799 },
     both: { earlybird: 1350, full: 1598 }
 };
 
-// Public, non-secret identifiers only (safe to ship in client JS).
-// Replace with real values once Stripe/PayPal are set up; left as
-// placeholders for now, the flow degrades gracefully until then.
-const STRIPE_PUBLISHABLE_KEY = 'REPLACE_WITH_STRIPE_PUBLISHABLE_KEY';
-const PAYPAL_CLIENT_ID = 'REPLACE_WITH_PAYPAL_CLIENT_ID';
+// Public, non-secret identifiers (publishable key / client ID) are fetched
+// from the public-config function rather than hardcoded here, so switching
+// test/live credentials is just an environment variable change on Netlify,
+// not a code edit.
+let publicConfigPromise = null;
 
-function isConfigured(value) {
-    return typeof value === 'string' && !value.startsWith('REPLACE_WITH_');
+function getPublicConfig() {
+    if (!publicConfigPromise) {
+        publicConfigPromise = fetch('/.netlify/functions/public-config')
+            .then(res => res.ok ? res.json() : {})
+            .catch(() => ({}));
+    }
+    return publicConfigPromise;
 }
 
 function initializeScripts() {
@@ -78,6 +83,48 @@ function initRegistrationFlow() {
     const successEl = document.getElementById('form-success');
     const unavailableEl = document.getElementById('payment-unavailable');
 
+    // Stripe's embedded checkout requires a return_url and always redirects
+    // the whole page there once payment completes - there's no way to avoid
+    // that round trip. So on load, check whether we're coming back from one
+    // (a session_id in the URL) and verify it server-side before showing
+    // success, rather than just landing back on a blank, unexplained form.
+    const returningSessionId = new URLSearchParams(window.location.search).get('session_id');
+    if (returningSessionId) {
+        form.classList.add('hidden');
+        paymentStep.classList.add('hidden');
+        fetch(`/.netlify/functions/verify-stripe-session?session_id=${encodeURIComponent(returningSessionId)}`)
+            .then(res => res.json())
+            .then(({ paid }) => {
+                history.replaceState(null, '', window.location.pathname + window.location.hash);
+                if (paid) {
+                    successEl.classList.remove('hidden');
+                    successEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    form.classList.remove('hidden');
+                    errorEl.textContent = "It looks like your payment didn't go through. Please try again below, or email ";
+                    const mailLink = document.createElement('a');
+                    mailLink.href = 'mailto:cnimausa@gmail.com';
+                    mailLink.textContent = 'cnimausa@gmail.com';
+                    errorEl.appendChild(mailLink);
+                    errorEl.append('.');
+                    errorEl.classList.remove('hidden');
+                }
+            })
+            .catch(error => {
+                console.error('Stripe session verification failed:', error);
+                form.classList.remove('hidden');
+                errorEl.classList.remove('hidden');
+            });
+    }
+
+    // Netlify Forms only actually processes submissions on a real deploy -
+    // it never works against a local server, including `netlify dev`. So a
+    // Forms failure here is expected (and must still block checkout) on the
+    // real site, but would make it impossible to test Stripe/PayPal locally
+    // if treated the same way. On localhost only, log it and continue so
+    // the payment step itself can still be tested.
+    const isLocalDev = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
         errorEl.classList.add('hidden');
@@ -97,8 +144,11 @@ function initRegistrationFlow() {
                 body: encoded
             });
 
-            if (!response.ok) {
+            if (!response.ok && !isLocalDev) {
                 throw new Error(`Netlify Forms responded ${response.status}`);
+            }
+            if (!response.ok) {
+                console.warn(`Netlify Forms responded ${response.status} - expected on localhost, continuing to payment for testing.`);
             }
 
             form.classList.add('hidden');
@@ -116,8 +166,9 @@ function initRegistrationFlow() {
     });
 
     async function initPaymentOptions({ amount, formData }) {
-        const stripeReady = isConfigured(STRIPE_PUBLISHABLE_KEY);
-        const paypalReady = isConfigured(PAYPAL_CLIENT_ID);
+        const config = await getPublicConfig();
+        const stripeReady = !!config.stripePublishableKey;
+        const paypalReady = !!config.paypalClientId;
 
         if (!stripeReady && !paypalReady) {
             unavailableEl.classList.remove('hidden');
@@ -126,7 +177,7 @@ function initRegistrationFlow() {
 
         if (stripeReady) {
             try {
-                await initStripeEmbeddedCheckout({ amount, formData });
+                await initStripeEmbeddedCheckout({ amount, formData, publishableKey: config.stripePublishableKey });
             } catch (error) {
                 console.error('Stripe init failed:', error);
             }
@@ -134,16 +185,16 @@ function initRegistrationFlow() {
 
         if (paypalReady) {
             try {
-                await initPaypalButtons({ amount, formData });
+                await initPaypalButtons({ amount, formData, clientId: config.paypalClientId });
             } catch (error) {
                 console.error('PayPal init failed:', error);
             }
         }
     }
 
-    async function initStripeEmbeddedCheckout({ amount, formData }) {
+    async function initStripeEmbeddedCheckout({ amount, formData, publishableKey }) {
         await loadScriptOnce('https://js.stripe.com/v3/');
-        const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+        const stripe = Stripe(publishableKey);
 
         const checkout = await stripe.initEmbeddedCheckout({
             fetchClientSecret: async () => {
@@ -166,8 +217,10 @@ function initRegistrationFlow() {
         checkout.mount('#stripe-checkout-container');
     }
 
-    async function initPaypalButtons({ amount, formData }) {
-        await loadScriptOnce(`https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD`);
+    async function initPaypalButtons({ amount, formData, clientId }) {
+        await loadScriptOnce(`https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`);
+
+        const paypalErrorEl = document.getElementById('payment-error');
 
         paypal.Buttons({
             createOrder: async () => {
@@ -179,18 +232,33 @@ function initRegistrationFlow() {
                         paymentOption: formData.get('paymentOption')
                     })
                 });
+                if (!res.ok) throw new Error(`Could not create PayPal order (${res.status})`);
                 const { orderId } = await res.json();
                 return orderId;
             },
             onApprove: async (data) => {
-                const res = await fetch('/.netlify/functions/capture-paypal-order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ orderId: data.orderID })
-                });
-                if (res.ok) {
-                    showSuccess();
+                try {
+                    const res = await fetch('/.netlify/functions/capture-paypal-order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ orderId: data.orderID })
+                    });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        paypalErrorEl.classList.add('hidden');
+                        showSuccess();
+                    } else {
+                        console.error('PayPal capture did not complete:', result);
+                        paypalErrorEl.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    console.error('PayPal capture request failed:', error);
+                    paypalErrorEl.classList.remove('hidden');
                 }
+            },
+            onError: (error) => {
+                console.error('PayPal button error:', error);
+                paypalErrorEl.classList.remove('hidden');
             }
         }).render('#paypal-button-container');
     }

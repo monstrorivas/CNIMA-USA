@@ -1,6 +1,7 @@
 [build]
   publish = "."
   command = "node scripts/generate-hidden-form.js"
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/*"
