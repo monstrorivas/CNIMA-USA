@@ -1,4 +1,6 @@
+const { getPrice, WORKSHOP_LABELS } = require('./_shared/workshop-2027');
 const { PAYPAL_API_BASE, getAccessToken } = require('./_shared/paypal-client');
+const { notifyPaymentComplete } = require('./_shared/notify-payment-complete');
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
@@ -12,7 +14,7 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: 'Invalid JSON' };
     }
 
-    const { orderId } = payload;
+    const { orderId, workshop, paymentOption } = payload;
     if (!orderId) {
         return { statusCode: 400, body: 'Missing orderId' };
     }
@@ -38,6 +40,32 @@ exports.handler = async (event) => {
         }
 
         const completed = res.ok && capture.status === 'COMPLETED';
+
+        if (completed) {
+            // Use PayPal's own confirmed payer details rather than trusting
+            // whatever the client claims - same principle as never trusting
+            // a client-supplied price.
+            const payer = capture.payer || {};
+            const name = [payer.name && payer.name.given_name, payer.name && payer.name.surname]
+                .filter(Boolean)
+                .join(' ');
+            let amount = null;
+            try {
+                amount = getPrice(workshop, paymentOption);
+            } catch {
+                // Unknown workshop/paymentOption combo - still notify, just without an amount.
+            }
+
+            await notifyPaymentComplete({
+                provider: 'paypal',
+                name,
+                email: payer.email_address,
+                workshop,
+                workshopLabel: workshop ? WORKSHOP_LABELS[workshop] : undefined,
+                paymentOption,
+                amount
+            });
+        }
 
         return {
             statusCode: completed ? 200 : 402,

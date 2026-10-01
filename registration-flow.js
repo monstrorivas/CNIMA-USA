@@ -122,8 +122,8 @@ async function initRegistrationFlow() {
                     form.classList.remove('hidden');
                     errorEl.textContent = "It looks like your payment didn't go through. Please try again below, or email ";
                     const mailLink = document.createElement('a');
-                    mailLink.href = 'mailto:cnimausa@gmail.com';
-                    mailLink.textContent = 'cnimausa@gmail.com';
+                    mailLink.href = 'mailto:registrations@cnimausa.com';
+                    mailLink.textContent = 'registrations@cnimausa.com';
                     errorEl.appendChild(mailLink);
                     errorEl.append('.');
                     errorEl.classList.remove('hidden');
@@ -260,7 +260,11 @@ async function initRegistrationFlow() {
                     const res = await fetch('/.netlify/functions/capture-paypal-order', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ orderId: data.orderID })
+                        body: JSON.stringify({
+                            orderId: data.orderID,
+                            workshop: formData.get('workshop'),
+                            paymentOption: formData.get('paymentOption')
+                        })
                     });
                     const result = await res.json();
                     if (res.ok && result.success) {

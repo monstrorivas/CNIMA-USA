@@ -17,6 +17,14 @@
   email = "cnimausa@gmail.com"
 
 [[forms.notifications]]
+  form = "registration"
+  email = "registrations@cnimausa.com"
+
+[[forms.notifications]]
   form = "mailing-list"
   email = "cnimausa@gmail.com"
+
+[[forms.notifications]]
+  form = "mailing-list"
+  email = "registrations@cnimausa.com"
 

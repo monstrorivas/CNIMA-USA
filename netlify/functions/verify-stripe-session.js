@@ -1,4 +1,6 @@
 const Stripe = require('stripe');
+const { notifyPaymentComplete } = require('./_shared/notify-payment-complete');
+const { getPrice, WORKSHOP_LABELS } = require('./_shared/workshop-2027');
 
 // Called when the page reloads after Stripe's required return_url redirect,
 // to confirm the session actually completed before showing a success state -
@@ -13,13 +15,33 @@ exports.handler = async (event) => {
 
     try {
         const session = await stripe.checkout.sessions.retrieve(sessionId);
+        const paid = session.payment_status === 'paid';
+        const { name, workshop, paymentOption } = session.metadata || {};
+
+        if (paid) {
+            const email = (session.customer_details && session.customer_details.email) || session.customer_email;
+            let amount = null;
+            try {
+                amount = getPrice(workshop, paymentOption);
+            } catch {
+                // Unknown workshop/paymentOption combo - still notify, just without an amount.
+            }
+
+            await notifyPaymentComplete({
+                provider: 'stripe',
+                name,
+                email,
+                workshop,
+                workshopLabel: WORKSHOP_LABELS[workshop],
+                paymentOption,
+                amount
+            });
+        }
+
         return {
             statusCode: 200,
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                paid: session.payment_status === 'paid',
-                workshop: session.metadata && session.metadata.workshop
-            })
+            body: JSON.stringify({ paid, workshop })
         };
     } catch (error) {
         console.error('Stripe session verification failed:', error);
