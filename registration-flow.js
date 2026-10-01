@@ -72,9 +72,28 @@ function initializeScripts() {
     initRegistrationFlow();
 }
 
-function initRegistrationFlow() {
-    const form = document.getElementById('registration-form');
-    if (!form) return; // register.html not loaded yet or not on this page
+// Both loader.js and this file's own fallback bootstrap call
+// initializeScripts(), and on a real network the fallback can fire before
+// loader.js has finished fetching components/register.html - so this can't
+// just bail out on the first "not found yet" check (that's what caused
+// submissions to fall through to a native, unhandled form POST on the
+// deployed preview, even though it worked every time locally where fetches
+// are near-instant). Poll briefly instead, and use its own completion flag
+// separate from the nav-level one so a premature call never blocks the
+// later, correctly-timed one from actually attaching the listener.
+async function initRegistrationFlow() {
+    if (window.__cnimaRegistrationFlowInitialized) return;
+
+    let form = document.getElementById('registration-form');
+    let retries = 0;
+    while (!form && retries < 50) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        form = document.getElementById('registration-form');
+        retries++;
+    }
+    if (!form) return; // genuinely not on this page
+
+    window.__cnimaRegistrationFlowInitialized = true;
 
     const submitBtn = document.getElementById('registration-submit');
     const errorEl = document.getElementById('registration-error');
