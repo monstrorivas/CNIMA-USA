@@ -3,9 +3,9 @@
 // actually determines the amount charged, since a client-supplied amount
 // can never be trusted. Keep both in sync when pricing changes.
 const PRICING = {
-    week1: { earlybird: 675, full: 799 },
-    week2: { earlybird: 675, full: 799 },
-    both: { earlybird: 1350, full: 1598 }
+    week1: { earlybird: 699, full: 799 },
+    week2: { earlybird: 699, full: 799 },
+    both: { earlybird: 1398, full: 1598 }
 };
 
 const WORKSHOP_LABELS = {
