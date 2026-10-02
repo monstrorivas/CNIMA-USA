@@ -150,6 +150,16 @@ async function initRegistrationFlow() {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Submitting...';
 
+        // Fresh every submit (not reused across retries): if an earlier
+        // submit attempt already landed as its own Netlify Forms submission,
+        // reusing its ID here would leave two Sheet rows sharing one
+        // registrationId, which breaks the payment-step row lookup.
+        const registrationIdField = document.getElementById('registrationId');
+        const registrationId = crypto.randomUUID();
+        if (registrationIdField) {
+            registrationIdField.value = registrationId;
+        }
+
         const formData = new FormData(form);
         const workshop = formData.get('workshop');
         const paymentOption = formData.get('paymentOption');
@@ -175,7 +185,7 @@ async function initRegistrationFlow() {
             amountDisplay.textContent = amount ? `Amount due: $${amount.toLocaleString()}` : '';
             paymentStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            await initPaymentOptions({ amount, formData });
+            await initPaymentOptions({ amount, formData, registrationId });
         } catch (error) {
             console.error('Registration submission failed:', error);
             errorEl.classList.remove('hidden');
@@ -184,7 +194,7 @@ async function initRegistrationFlow() {
         }
     });
 
-    async function initPaymentOptions({ amount, formData }) {
+    async function initPaymentOptions({ amount, formData, registrationId }) {
         const config = await getPublicConfig();
         const stripeReady = !!config.stripePublishableKey;
         const paypalReady = !!config.paypalClientId;
@@ -196,7 +206,7 @@ async function initRegistrationFlow() {
 
         if (stripeReady) {
             try {
-                await initStripeEmbeddedCheckout({ amount, formData, publishableKey: config.stripePublishableKey });
+                await initStripeEmbeddedCheckout({ amount, formData, registrationId, publishableKey: config.stripePublishableKey });
             } catch (error) {
                 console.error('Stripe init failed:', error);
             }
@@ -204,14 +214,14 @@ async function initRegistrationFlow() {
 
         if (paypalReady) {
             try {
-                await initPaypalButtons({ amount, formData, clientId: config.paypalClientId });
+                await initPaypalButtons({ amount, formData, registrationId, clientId: config.paypalClientId });
             } catch (error) {
                 console.error('PayPal init failed:', error);
             }
         }
     }
 
-    async function initStripeEmbeddedCheckout({ amount, formData, publishableKey }) {
+    async function initStripeEmbeddedCheckout({ amount, formData, registrationId, publishableKey }) {
         await loadScriptOnce('https://js.stripe.com/v3/');
         const stripe = Stripe(publishableKey);
 
@@ -224,7 +234,8 @@ async function initRegistrationFlow() {
                         workshop: formData.get('workshop'),
                         paymentOption: formData.get('paymentOption'),
                         email: formData.get('email'),
-                        name: `${formData.get('firstName')} ${formData.get('lastName')}`
+                        name: `${formData.get('firstName')} ${formData.get('lastName')}`,
+                        registrationId
                     })
                 });
                 if (!res.ok) throw new Error('Could not create Stripe session');
@@ -236,7 +247,7 @@ async function initRegistrationFlow() {
         checkout.mount('#stripe-checkout-container');
     }
 
-    async function initPaypalButtons({ amount, formData, clientId }) {
+    async function initPaypalButtons({ amount, formData, registrationId, clientId }) {
         await loadScriptOnce(`https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`);
 
         const paypalErrorEl = document.getElementById('payment-error');
@@ -263,7 +274,8 @@ async function initRegistrationFlow() {
                         body: JSON.stringify({
                             orderId: data.orderID,
                             workshop: formData.get('workshop'),
-                            paymentOption: formData.get('paymentOption')
+                            paymentOption: formData.get('paymentOption'),
+                            registrationId
                         })
                     });
                     const result = await res.json();

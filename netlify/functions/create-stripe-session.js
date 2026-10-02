@@ -13,7 +13,7 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: 'Invalid JSON' };
     }
 
-    const { workshop, paymentOption, email, name } = payload;
+    const { workshop, paymentOption, email, name, registrationId } = payload;
 
     let amount;
     try {
@@ -40,7 +40,7 @@ exports.handler = async (event) => {
                 },
                 quantity: 1
             }],
-            metadata: { name: name || '', workshop, paymentOption },
+            metadata: { name: name || '', workshop, paymentOption, registrationId: registrationId || '' },
             // Embedded Checkout requires a return_url - Stripe always
             // redirects the whole page here once payment completes, even
             // in embedded mode. The {CHECKOUT_SESSION_ID} placeholder is

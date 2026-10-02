@@ -17,14 +17,16 @@
   email = "cnimausa@gmail.com"
 
 [[forms.notifications]]
-  form = "registration"
-  email = "registrations@cnimausa.com"
-
-[[forms.notifications]]
   form = "mailing-list"
   email = "cnimausa@gmail.com"
 
-[[forms.notifications]]
-  form = "mailing-list"
-  email = "registrations@cnimausa.com"
+# Note: these declarative notifications don't appear to be what actually
+# drives Netlify's Form notifications - the real ones (confirmed working,
+# predating this project) are configured directly in the dashboard (Site
+# settings -> Forms -> Form notifications). Treat this block as a record of
+# intent, not the live configuration. A second "registration" notification
+# isn't added here at all - that one goes out via Resend's cc in
+# netlify/functions/_shared/notify-payment-complete.js instead, specifically
+# because it must only fire on confirmed payment, not on submission (a
+# dashboard notification for this form would fire on submission alone).
 
