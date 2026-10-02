@@ -29,6 +29,12 @@ exports.handler = async (event) => {
         const session = await stripe.checkout.sessions.create({
             ui_mode: 'embedded',
             mode: 'payment',
+            // This box is explicitly labeled "Pay by Card" (PayPal is its own
+            // separate flow below it) - without this, Stripe auto-enables
+            // whatever's turned on in the Dashboard (Link, Cash App, Affirm,
+            // Klarna...) and picks its own default/ordering, which is how
+            // Link ends up pre-selected ahead of the card form.
+            payment_method_types: ['card'],
             customer_email: email || undefined,
             line_items: [{
                 price_data: {
