@@ -16,7 +16,7 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: 'Invalid JSON' };
     }
 
-    const { orderId, workshop, paymentOption, registrationId } = payload;
+    const { orderId, workshop, paymentOption, registrationId, email: formEmail } = payload;
     if (!orderId) {
         return { statusCode: 400, body: 'Missing orderId' };
     }
@@ -61,7 +61,11 @@ exports.handler = async (event) => {
             await notifyPaymentComplete({
                 provider: 'paypal',
                 name,
-                email: payer.email_address,
+                // PayPal's own payer email, plus whatever was typed into our
+                // registration form - the sandbox/real buyer's PayPal account
+                // can genuinely be a different address than the form, unlike
+                // Stripe's prefilled-and-locked email field.
+                email: [payer.email_address, formEmail],
                 workshop,
                 workshopLabel: workshop ? WORKSHOP_LABELS[workshop] : undefined,
                 paymentOption,

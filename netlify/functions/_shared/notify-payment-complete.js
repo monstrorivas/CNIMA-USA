@@ -5,6 +5,12 @@ const RESEND_API_URL = 'https://api.resend.com/emails';
 // Resend. Never throws: a failed notification shouldn't break the payment
 // success response the user actually sees, so every failure is caught and
 // logged instead.
+//
+// `email` can be a single address or an array - PayPal's buyer can approve
+// payment while logged into a PayPal account whose email differs from the
+// one typed into our own registration form (unlike Stripe, which locks the
+// prefilled email field), so capture-paypal-order.js passes both and this
+// sends to whichever of them are actually present, deduped.
 async function notifyPaymentComplete({ name, email, workshopLabel, amount, provider }) {
     const apiKey = process.env.RESEND_API_KEY;
     const fromAddress = process.env.RESEND_FROM_EMAIL;
@@ -13,7 +19,8 @@ async function notifyPaymentComplete({ name, email, workshopLabel, amount, provi
         console.warn('RESEND_API_KEY or RESEND_FROM_EMAIL not set - skipping payment-complete email.');
         return;
     }
-    if (!email) {
+    const recipients = [...new Set([].concat(email).filter(Boolean))];
+    if (recipients.length === 0) {
         console.warn('No registrant email available - skipping payment-complete email.');
         return;
     }
@@ -41,7 +48,7 @@ CNIMA USA`;
             },
             body: JSON.stringify({
                 from: fromAddress,
-                to: email,
+                to: recipients,
                 // User-facing correspondence address is registrations@ - it's
                 // cc'd (visible to the registrant) so it has its own copy in
                 // the thread, while cnimausa@ is bcc'd (admin-only visibility,

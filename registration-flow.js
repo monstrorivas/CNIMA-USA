@@ -275,7 +275,8 @@ async function initRegistrationFlow() {
                             orderId: data.orderID,
                             workshop: formData.get('workshop'),
                             paymentOption: formData.get('paymentOption'),
-                            registrationId
+                            registrationId,
+                            email: formData.get('email')
                         })
                     });
                     const result = await res.json();
