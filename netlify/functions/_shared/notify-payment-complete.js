@@ -42,15 +42,19 @@ CNIMA USA`;
             body: JSON.stringify({
                 from: fromAddress,
                 to: email,
-                // User-facing correspondence address is registrations@ -
-                // both inboxes get cc'd here specifically (not via a second,
+                // User-facing correspondence address is registrations@ - it's
+                // cc'd (visible to the registrant) so it has its own copy in
+                // the thread, while cnimausa@ is bcc'd (admin-only visibility,
+                // not shown to the registrant or exposed on reply-all). Both
+                // get a copy here specifically (not via a second,
                 // submission-triggered Netlify Forms notification) because
                 // this only ever fires once payment is actually confirmed -
                 // a submission-triggered notification would fire for anyone
                 // who registered but abandoned payment, putting it out of
                 // sync with what this confirmation email represents.
                 reply_to: 'registrations@cnimausa.com',
-                cc: ['cnimausa@gmail.com', 'registrations@cnimausa.com'],
+                cc: 'registrations@cnimausa.com',
+                bcc: 'cnimausa@gmail.com',
                 subject: "You're confirmed for CNIMA USA 2027!",
                 text
             })
