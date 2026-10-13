@@ -137,9 +137,18 @@ a {
     text-align: center;
 }
 
+/* Copy on the left, the poster as a framed print on the right. The poster
+   already carries the dates, place, teachers and "all ages/levels/styles",
+   so the hero keeps only what it doesn't say: that registration is open,
+   the workshop name, and the two actions. */
 .hero-container {
-    max-width: 680px;
+    max-width: 1000px;
     margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+    gap: 3rem;
+    align-items: center;
+    text-align: left;
 }
 
 .hero-eyebrow {
@@ -158,28 +167,14 @@ a {
 .hero-title {
     font-size: 2.75rem;
     line-height: 1.1;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     color: var(--white);
-}
-
-.hero-subtitle {
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: var(--gold);
-    margin-bottom: 1.25rem;
-}
-
-.hero-description {
-    font-size: 1.05rem;
-    margin: 0 auto 2rem;
-    max-width: 46ch;
-    color: var(--muted);
 }
 
 .hero-actions {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 1rem;
 }
 
@@ -489,7 +484,8 @@ a {
     margin: 0 auto;
 }
 
-.share-poster {
+.share-poster,
+.hero-poster {
     display: block;
     background: var(--cream);
     border: 3px solid var(--gold);
@@ -499,11 +495,13 @@ a {
     transition: transform 0.15s ease;
 }
 
-.share-poster:hover {
+.share-poster:hover,
+.hero-poster:hover {
     transform: translateY(-3px);
 }
 
-.share-poster img {
+.share-poster img,
+.hero-poster img {
     display: block;
     width: 100%;
     height: auto;
@@ -851,6 +849,18 @@ a {
 @media (max-width: 768px) {
     .hero-title {
         font-size: 2.1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-container {
+        grid-template-columns: minmax(0, 440px);
+        justify-content: center;
+        gap: 2.5rem;
+        text-align: center;
+    }
+
+    .hero-actions {
+        justify-content: center;
     }
 
     .dates-grid {
