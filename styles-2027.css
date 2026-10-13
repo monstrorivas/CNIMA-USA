@@ -373,21 +373,12 @@ a {
     color: var(--muted);
 }
 
-/* About */
-.about-layout {
-    display: grid;
-    grid-template-columns: 0.9fr 1.1fr;
-    gap: 2.5rem;
-    align-items: center;
-}
-
-.about-image {
-    width: 100%;
-    height: auto;
-    border-radius: 16px;
-    border: 6px solid var(--white);
-    box-shadow: var(--shadow);
-    display: block;
+/* About: a single readable column now that the section has no image. The
+   title is centered like the other sections; the body stays left-aligned
+   because centered paragraphs are hard to read. */
+.about-copy {
+    max-width: 68ch;
+    margin: 0 auto;
 }
 
 .about-copy .lead {
@@ -874,10 +865,6 @@ a {
 
     .nav-links {
         justify-content: center;
-    }
-
-    .about-layout {
-        grid-template-columns: 1fr;
     }
 
     .share-grid {
