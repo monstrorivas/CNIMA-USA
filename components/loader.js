@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         { name: 'teachers', target: 'teachers-container' },
         { name: 'workshop', target: 'workshop-container' },
         { name: 'register', target: 'register-container' },
+        { name: 'share', target: 'share-container' },
         { name: 'contact', target: 'contact-container' },
         { name: 'footer', target: 'footer-container' }
     ];
