@@ -1,8 +1,7 @@
 const { getPrice, WORKSHOP_LABELS } = require('./_shared/workshop-2027');
 const { PAYPAL_API_BASE, getAccessToken } = require('./_shared/paypal-client');
 const { notifyPaymentComplete } = require('./_shared/notify-payment-complete');
-const { getAccessToken: getGoogleAccessToken } = require('./_shared/google-sheets-client');
-const { markRegistrationPaidWithRetry } = require('./_shared/registrations-sheet');
+const { recordPaymentInSheets } = require('./_shared/record-payment');
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
@@ -72,23 +71,19 @@ exports.handler = async (event) => {
                 amount
             });
 
-            try {
-                const googleAccessToken = await getGoogleAccessToken();
-                await markRegistrationPaidWithRetry(process.env.GOOGLE_SHEET_ID, googleAccessToken, {
-                    registrationId,
-                    provider: 'paypal',
-                    amount,
-                    fallbackData: {
-                        firstName: payer.name && payer.name.given_name,
-                        lastName: payer.name && payer.name.surname,
-                        email: payer.email_address,
-                        workshop,
-                        paymentOption
-                    }
-                });
-            } catch (error) {
-                console.error('Marking registration paid in Sheets failed:', error);
-            }
+            await recordPaymentInSheets({
+                registrationId,
+                provider: 'paypal',
+                amount,
+                workshop,
+                fallbackData: {
+                    firstName: payer.name && payer.name.given_name,
+                    lastName: payer.name && payer.name.surname,
+                    email: payer.email_address || formEmail,
+                    workshop,
+                    paymentOption
+                }
+            });
         }
 
         return {

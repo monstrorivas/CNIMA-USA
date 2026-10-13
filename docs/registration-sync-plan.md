@@ -58,6 +58,14 @@ Google Sheet (one tab: "Registrations")
    - Form: `registration`.
    - URL: `https://<your-site>/.netlify/functions/handle-registration-webhook?secret=<REGISTRATION_WEBHOOK_SECRET>` (the same secret value as step 3, in the URL itself).
 
+5. **Optional: the per-week spreadsheet** (for the people running each week)
+   - Create a second Google Sheet with two tabs named exactly `Week 1` and `Week 2`, and share it with the same service account as **Editor**.
+   - Set `GOOGLE_WEEKS_SHEET_ID` to its ID. Leave it unset to skip this feature entirely.
+   - Every registration also gets a row in the tab for its week; "both weeks" gets a row in each. When payment completes, those rows are marked paid, and the amount for a "both weeks" payment is split evenly across the two rows so the tabs add up to what was actually collected (the master sheet keeps the full amount on its single row).
+   - This sheet is meant to be edited by people, so the code treats it differently from the master: it never rewrites the header row, and writes by column **position**, not header text. Editors can rename headers, recolor, add columns to the right and add manual rows or notes. They should not reorder or delete columns A–U (hide them instead) or rename the two tabs.
+   - Rows deleted by an editor are fine: new registrations simply append. If a deleted row's registrant later pays, a paid row is added back so a confirmed payment never goes missing.
+   - If the weeks write fails, the webhook returns 500 and Netlify retries; both sheets dedupe on the submission ID, so a retry only fills in what is missing.
+
 ## Why a URL-embedded secret instead of a signing header
 
 Netlify doesn't sign outgoing form webhook payloads the way some other platforms sign theirs (no HMAC header to verify against) — the current, well-understood alternative is a shared secret in the URL that only Netlify's notification config and the function itself know. It's a narrow, single-purpose credential: it can only ever be used to call this one function, and that function can only ever append a row to this one sheet — nothing like the account-wide reach a Netlify API token would have had.

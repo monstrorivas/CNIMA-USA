@@ -1,5 +1,6 @@
 const { getAccessToken } = require('./_shared/google-sheets-client');
 const { appendRegistrationIfNew } = require('./_shared/registrations-sheet');
+const { appendToWeekSheets } = require('./_shared/week-sheets');
 
 // Receives Netlify's outgoing webhook notification the moment someone
 // submits the registration form, and appends that one registrant to the
@@ -46,6 +47,17 @@ exports.handler = async (event) => {
             submissionId,
             data
         });
+
+        // Failing here returns 500 so Netlify retries the delivery; both
+        // writes dedupe on the submission ID, so a retry only fills in
+        // whatever is still missing.
+        if (process.env.GOOGLE_WEEKS_SHEET_ID) {
+            await appendToWeekSheets(process.env.GOOGLE_WEEKS_SHEET_ID, accessToken, {
+                submissionId,
+                data
+            });
+        }
+
         return { statusCode: 200, body: appended ? 'Synced' : 'Already synced' };
     } catch (error) {
         console.error('Registration webhook sync failed:', error);

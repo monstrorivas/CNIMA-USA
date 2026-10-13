@@ -1,8 +1,7 @@
 const Stripe = require('stripe');
 const { notifyPaymentComplete } = require('./_shared/notify-payment-complete');
 const { getPrice, WORKSHOP_LABELS } = require('./_shared/workshop-2027');
-const { getAccessToken } = require('./_shared/google-sheets-client');
-const { markRegistrationPaidWithRetry } = require('./_shared/registrations-sheet');
+const { recordPaymentInSheets } = require('./_shared/record-payment');
 
 // Called when the page reloads after Stripe's required return_url redirect,
 // to confirm the session actually completed before showing a success state -
@@ -39,18 +38,14 @@ exports.handler = async (event) => {
                 amount
             });
 
-            try {
-                const [firstName, ...rest] = (name || '').trim().split(' ');
-                const accessToken = await getAccessToken();
-                await markRegistrationPaidWithRetry(process.env.GOOGLE_SHEET_ID, accessToken, {
-                    registrationId,
-                    provider: 'stripe',
-                    amount,
-                    fallbackData: { firstName, lastName: rest.join(' '), email, workshop, paymentOption }
-                });
-            } catch (error) {
-                console.error('Marking registration paid in Sheets failed:', error);
-            }
+            const [firstName, ...rest] = (name || '').trim().split(' ');
+            await recordPaymentInSheets({
+                registrationId,
+                provider: 'stripe',
+                amount,
+                workshop,
+                fallbackData: { firstName, lastName: rest.join(' '), email, workshop, paymentOption }
+            });
         }
 
         return {
