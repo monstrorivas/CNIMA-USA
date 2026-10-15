@@ -2,29 +2,32 @@
 <section id="contact" class="section">
     <div class="container">
         <h2 class="section-title centered">Contact Us</h2>
-        <div class="contact-content">
+
+        <div class="contact-intro">
             <p>For questions about the workshop:</p>
             <p class="contact-email">
                 <a href="mailto:registrations@cnimausa.com" class="mailto-link">registrations@cnimausa.com</a>
             </p>
+        </div>
 
-            <!-- TODO: add real social links once you have them; remove any platform you don't use -->
-            <div class="social-links">
-                <a href="#" class="social-link" aria-label="Instagram">Instagram</a>
-                <a href="#" class="social-link" aria-label="Facebook">Facebook</a>
+        <div class="contact-cards">
+            <div class="contact-card videos">
+                <h3>Videos</h3>
+                <p>Watch CNIMA students from around the world on the CNIMA Jacques Mornet YouTube channel.</p>
+                <a href="https://www.youtube.com/channel/UCVp0drmP1YjDNVvvnIgcKmg/videos" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
             </div>
 
             <!-- Mailing List Signup -->
-            <div class="mailing-list">
-                <h3>Join Our Mailing List</h3>
-                <p>Stay updated with workshop news and announcements</p>
+            <div class="contact-card mailing-list">
+                <h3>Mailing list</h3>
+                <p>Stay updated with workshop news and announcements.</p>
                 <form name="mailing-list" method="POST" netlify netlify-honeypot="bot-field" action="/mailing-list-success.html" class="mailing-list-form" data-netlify="true">
                     <input type="hidden" name="form-name" value="mailing-list" />
                     <p class="hidden">
                         <label>Don't fill this out if you're human: <input name="bot-field" /></label>
                     </p>
                     <div class="mailing-list-input-group">
-                        <input type="email" name="email" placeholder="Enter your email address" required>
+                        <input type="email" name="email" placeholder="Your email address" aria-label="Email address" required>
                         <button type="submit" class="btn btn-primary">Subscribe</button>
                     </div>
                 </form>
@@ -32,10 +35,10 @@
                     <p>✓ Thank you! You've been added to our mailing list.</p>
                 </div>
             </div>
+        </div>
 
-            <div class="links">
-                <a href="https://www.cnima.com/en" target="_blank" rel="noopener noreferrer">Visit CNIMA France Website</a>
-            </div>
+        <div class="links contact-links">
+            <a href="https://www.cnima.com/en" target="_blank" rel="noopener noreferrer">Visit CNIMA France Website</a>
         </div>
     </div>
 </section>
