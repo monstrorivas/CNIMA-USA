@@ -132,9 +132,33 @@ a {
 }
 
 /* Hero */
+/* The group photo as a black-and-white band behind the hero. It is the same
+   file the About section uses, so it downloads once. The photo and its
+   navy overlay are separate layers because the grayscale filter would also
+   drain the color out of an overlay stacked on the same element. */
 .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     padding: 4rem 0 4.5rem;
     text-align: center;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background: url('assets/images/2027/cnima-students.jpg') center 35% / cover no-repeat;
+    filter: grayscale(1) contrast(1.05);
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(to bottom, rgba(14, 42, 63, 0.86) 0%, rgba(14, 42, 63, 0.82) 60%, var(--bg) 100%);
 }
 
 .hero-container {
@@ -188,7 +212,7 @@ a {
     padding: 1rem 1.25rem;
     border: 1px solid rgba(243, 177, 32, 0.4);
     border-radius: 12px;
-    background: rgba(247, 241, 227, 0.05);
+    background: rgba(14, 42, 63, 0.92);
 }
 
 .hero-workshop-label {
@@ -236,7 +260,7 @@ a {
     font-size: 1.05rem;
     margin: 0 auto 2rem;
     max-width: 46ch;
-    color: var(--muted);
+    color: rgba(247, 241, 227, 0.92);
 }
 
 .hero-actions {
@@ -441,12 +465,29 @@ a {
     color: var(--muted);
 }
 
-/* About: a single readable column now that the section has no image. The
-   title is centered like the other sections; the body stays left-aligned
-   because centered paragraphs are hard to read. */
-.about-copy {
-    max-width: 68ch;
-    margin: 0 auto;
+/* About: the group photo beside the text, shown whole (it's a crowd, so
+   cropping would cut off faces) in the same cream and gold frame as the
+   other cards. */
+.about-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: center;
+}
+
+.about-photo-frame {
+    background: var(--cream);
+    border: 3px solid var(--gold);
+    border-radius: 16px;
+    padding: 0.75rem;
+    box-shadow: var(--shadow);
+}
+
+.about-photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
 }
 
 .about-copy .lead {
@@ -459,6 +500,11 @@ a {
 .about-copy p {
     color: var(--muted);
     margin-bottom: 1rem;
+}
+
+.about-copy a {
+    color: var(--gold);
+    font-weight: 700;
 }
 
 /* Cream focal cards, shared recipe for teacher bios and workshop details */
@@ -1130,6 +1176,11 @@ a {
 
     .nav-links {
         justify-content: center;
+    }
+
+    .about-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2rem;
     }
 
     .share-grid {

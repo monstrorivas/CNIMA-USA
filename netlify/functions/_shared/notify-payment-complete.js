@@ -99,7 +99,7 @@ async function sendEmails(emails) {
 }
 
 function depositText({ name, workshop, amount, provider, registrationId, paidAt }) {
-    const methodText = provider === 'paypal' ? 'PayPal' : 'card';
+    const viaText = provider === 'paypal' ? ', via PayPal' : '';
     const link = balanceLinkOrNull(registrationId);
     let balanceNow = null;
     let balanceLater = null;
@@ -111,7 +111,7 @@ function depositText({ name, workshop, amount, provider, registrationId, paidAt 
     }
     const locked = isEarlyBird(paidAt);
     const linkText = link
-        ? `Pay it any time with your personal payment link (by card or PayPal):\n${link}\n\nThe link is just for you, so please don't share it.`
+        ? `Pay it any time with your personal payment link (by card, digital wallet, or PayPal):\n${link}\n\nThe link is just for you, so please don't share it.`
         : 'Reply to this email and we will send you a link to pay it.';
 
     const balanceLine = balanceNow == null
@@ -125,7 +125,7 @@ function depositText({ name, workshop, amount, provider, registrationId, paidAt 
 
     return `Hi ${firstNameOf(name)},
 
-We've received your non-refundable deposit (${money(amount || DEPOSIT_AMOUNT)}, via ${methodText}) for ${workshopTextOf(workshop)}. Your spot${locked ? ' and the early-bird rate are' : ' is'} locked in.
+We've received your non-refundable deposit (${money(amount || DEPOSIT_AMOUNT)}${viaText}) for ${workshopTextOf(workshop)}. Your spot${locked ? ' and the early-bird rate are' : ' is'} locked in.
 
 ${balanceLine}
 
@@ -135,11 +135,11 @@ ${SIGN_OFF}`;
 }
 
 function confirmationText({ paymentType, name, workshop, amount, provider }) {
-    const methodText = provider === 'paypal' ? 'PayPal' : 'card';
+    const viaText = provider === 'paypal' ? ', via PayPal' : '';
     const amountText = amount ? money(amount) : 'your registration fee';
     const paymentText = paymentType === 'balance'
-        ? `Your balance payment (${amountText}, via ${methodText}) has been received - you are now paid in full for ${workshopTextOf(workshop)}, and your registration is confirmed.`
-        : `Your registration and payment (${amountText}, via ${methodText}) for ${workshopTextOf(workshop)} are confirmed.`;
+        ? `Your balance payment (${amountText}${viaText}) has been received - you are now paid in full for ${workshopTextOf(workshop)}, and your registration is confirmed.`
+        : `Your registration and payment (${amountText}${viaText}) for ${workshopTextOf(workshop)} are confirmed.`;
 
     return `Hi ${firstNameOf(name)},
 
@@ -178,7 +178,7 @@ function balanceReminderEmail({ name, email, workshop, registrationId, daysLeft,
 
 A friendly reminder that the remaining balance of ${money(getBalanceAmount(workshop, now))} for ${workshopTextOf(workshop)} is due by ${EARLYBIRD_DEADLINE_LABEL} (${daysLeft} day${daysLeft === 1 ? '' : 's'} from now) to keep your early-bird rate.
 
-Pay securely by card or PayPal with your personal link:
+Pay securely by card, digital wallet, or PayPal with your personal link:
 ${link}
 
 After ${EARLYBIRD_DEADLINE_LABEL} the balance will be based on full tuition (${money(getPrice(workshop, 'full') - DEPOSIT_AMOUNT)}).

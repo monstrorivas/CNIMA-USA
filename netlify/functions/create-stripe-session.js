@@ -39,12 +39,13 @@ exports.handler = async (event) => {
         const session = await stripe.checkout.sessions.create({
             ui_mode: 'embedded',
             mode: 'payment',
-            // This box is explicitly labeled "Pay by Card" (PayPal is its own
-            // separate flow below it) - without this, Stripe auto-enables
-            // whatever's turned on in the Dashboard (Link, Cash App, Affirm,
-            // Klarna...) and picks its own default/ordering, which is how
-            // Link ends up pre-selected ahead of the card form.
-            payment_method_types: ['card'],
+            // Listed explicitly so Stripe only offers what the site can record
+            // as paid the moment checkout finishes. Apple Pay and Google Pay
+            // come with 'card'. Affirm and Klarna are deliberately left out
+            // (they also have to be disabled in the Stripe dashboard, since
+            // Link can surface Klarna on its own), and so are delayed bank
+            // debits (docs/bank-payments-plan.md).
+            payment_method_types: ['card', 'link', 'amazon_pay', 'cashapp'],
             customer_email: email || undefined,
             line_items: [{
                 price_data: {

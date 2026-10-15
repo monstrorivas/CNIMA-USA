@@ -144,7 +144,7 @@ kill -9 PID
 ├── mailing-list-success.html  # Mailing-list signup success page
 ├── admin-test.html         # Unlinked admin page: payment setup check + $1 test (see docs/admin-check.md)
 ├── archive/
-│   ├── index.html          # Archive hub - lists every past workshop year
+│   ├── index.html          # Archive hub - lists every past workshop year (not linked from the nav; open /archive/ directly)
 │   └── 2026/                # Frozen snapshot of the 2026 workshop site
 │       ├── index.html
 │       ├── styles.css
