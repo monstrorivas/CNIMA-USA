@@ -142,6 +142,7 @@ kill -9 PID
 ├── netlify.toml            # Netlify configuration
 ├── success.html            # Registration success page (Netlify form redirect)
 ├── mailing-list-success.html  # Mailing-list signup success page
+├── admin-test.html         # Unlinked admin page: payment setup check + $1 test (see docs/admin-check.md)
 ├── archive/
 │   ├── index.html          # Archive hub - lists every past workshop year
 │   └── 2026/                # Frozen snapshot of the 2026 workshop site

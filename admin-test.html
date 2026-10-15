@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>CNIMA USA - Admin payment check</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 16px;
+            font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #1b1f24;
+            background: #f4f5f7;
+        }
+        main { max-width: 42rem; margin: 0 auto; }
+        h1 { font-size: 1.5rem; margin: 0 0 4px; }
+        h2 { font-size: 1.15rem; margin: 0 0 8px; }
+        h3 { font-size: 0.8rem; margin: 18px 0 6px; text-transform: uppercase; letter-spacing: 0.06em; color: #5a6270; }
+        p { margin: 0 0 12px; }
+        .muted { color: #5a6270; font-size: 0.9rem; }
+        .card { background: #fff; border: 1px solid #d9dce1; border-radius: 8px; padding: 16px; margin-top: 16px; }
+        label { display: block; font-weight: 600; margin-bottom: 4px; }
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 16px;
+            border: 1px solid #aab0ba;
+            border-radius: 6px;
+        }
+        button {
+            font: inherit;
+            font-weight: 600;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 6px;
+            background: #1f4e8c;
+            color: #fff;
+            cursor: pointer;
+        }
+        button.secondary { background: #e4e7ec; color: #1b1f24; }
+        button:disabled { opacity: 0.5; cursor: default; }
+        .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+        .banner { padding: 10px 12px; border-radius: 6px; margin-top: 12px; font-weight: 600; }
+        .banner.ok { background: #dff3e4; color: #14532d; }
+        .banner.bad { background: #fbe1e1; color: #7f1d1d; }
+        .banner.warn { background: #fdf0cf; color: #6b4a00; }
+        ul.checks { list-style: none; margin: 0; padding: 0; }
+        ul.checks li { display: flex; gap: 10px; padding: 8px 0; border-top: 1px solid #eceef1; }
+        ul.checks li:first-child { border-top: 0; }
+        .chip {
+            flex: none;
+            align-self: flex-start;
+            min-width: 3.4rem;
+            padding: 1px 6px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .chip.pass { background: #1e7a3c; }
+        .chip.warn { background: #b07a00; }
+        .chip.fail { background: #b42318; }
+        .check-label { font-weight: 600; }
+        .check-detail { color: #3d4450; font-size: 0.92rem; overflow-wrap: anywhere; }
+        code { background: #eceef1; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+        #checkout-container { margin-top: 12px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Admin payment check</h1>
+    <p class="muted">Private tool for CNIMA USA organizers. Nothing here writes to Google Sheets or sends email.</p>
+
+    <section class="card">
+        <label for="secret">Admin secret</label>
+        <input type="password" id="secret" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <p class="muted" style="margin-top:6px">The value of <code>ADMIN_CHECK_SECRET</code> in Netlify. It is sent in a request header, never in the URL, and is not stored.</p>
+    </section>
+
+    <section class="card">
+        <h2>1. Health check</h2>
+        <p class="muted">Read-only. Checks Stripe, PayPal, Google Sheets and Resend settings. Creates one Stripe Checkout Session and expires it immediately.</p>
+        <div class="actions"><button type="button" id="check-btn">Run health check</button></div>
+        <div id="check-banner" class="banner hidden" role="status"></div>
+        <div id="check-results"></div>
+    </section>
+
+    <section class="card">
+        <h2>2. $1 test payment</h2>
+        <p class="muted">Charges exactly $1.00 through the same embedded Stripe Checkout as registration. Creates no registration and no spreadsheet row, and sends no email. Afterwards, refund it in the Stripe dashboard.</p>
+        <div id="test-mode" class="banner hidden"></div>
+        <div class="actions">
+            <button type="button" id="test-btn">Start $1 test</button>
+            <button type="button" id="reset-btn" class="secondary hidden">Start over</button>
+        </div>
+        <div id="test-error" class="banner bad hidden" role="alert"></div>
+        <div id="checkout-container"></div>
+        <div id="test-result" class="hidden"></div>
+    </section>
+</main>
+
+<script>
+    const secretEl = document.getElementById('secret');
+    const checkBtn = document.getElementById('check-btn');
+    const checkBanner = document.getElementById('check-banner');
+    const checkResults = document.getElementById('check-results');
+    const testBtn = document.getElementById('test-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const testMode = document.getElementById('test-mode');
+    const testError = document.getElementById('test-error');
+    const testResult = document.getElementById('test-result');
+
+    function el(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+    }
+
+    function setBanner(node, kind, text) {
+        node.className = `banner ${kind}`;
+        node.textContent = text;
+    }
+
+    async function adminFetch(path, options = {}) {
+        if (!secretEl.value) throw new Error('Enter the admin secret first.');
+        const res = await fetch(`/.netlify/functions/${path}`, {
+            ...options,
+            headers: { ...(options.headers || {}), 'X-Admin-Secret': secretEl.value }
+        });
+        let data = {};
+        try { data = await res.json(); } catch { /* non-JSON error body */ }
+        if (res.status === 401) throw new Error('Wrong or missing admin secret.');
+        if (!res.ok) throw new Error(data.error || `Request failed (HTTP ${res.status}).`);
+        return data;
+    }
+
+    function renderChecks(checks) {
+        checkResults.replaceChildren();
+        let group = null;
+        let list = null;
+        for (const check of checks) {
+            if (check.group !== group) {
+                group = check.group;
+                checkResults.appendChild(el('h3', '', group));
+                list = el('ul', 'checks');
+                checkResults.appendChild(list);
+            }
+            const item = el('li');
+            item.appendChild(el('span', `chip ${check.status}`, check.status.toUpperCase()));
+            const body = el('div');
+            body.appendChild(el('div', 'check-label', check.label));
+            body.appendChild(el('div', 'check-detail', check.detail));
+            item.appendChild(body);
+            list.appendChild(item);
+        }
+    }
+
+    checkBtn.addEventListener('click', async () => {
+        checkBtn.disabled = true;
+        checkBtn.textContent = 'Checking...';
+        checkResults.replaceChildren();
+        checkBanner.className = 'banner hidden';
+        try {
+            const data = await adminFetch('admin-check');
+            const { pass, warn, fail } = data.summary;
+            setBanner(checkBanner, fail ? 'bad' : warn ? 'warn' : 'ok',
+                fail ? `${fail} problem(s) found - ${warn} warning(s), ${pass} passed.`
+                    : warn ? `No failures, ${warn} warning(s) to review - ${pass} passed.`
+                        : `All ${pass} checks passed.`);
+            renderChecks(data.checks);
+        } catch (error) {
+            setBanner(checkBanner, 'bad', error.message);
+        } finally {
+            checkBtn.disabled = false;
+            checkBtn.textContent = 'Run health check';
+        }
+    });
+
+    let checkout = null;
+    let sessionId = null;
+
+    function loadScriptOnce(src) {
+        return new Promise((resolve, reject) => {
+            if (document.querySelector(`script[src="${src}"]`)) return resolve();
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = () => reject(new Error(`Failed to load ${src}`));
+            document.head.appendChild(script);
+        });
+    }
+
+    function resetTest() {
+        if (checkout) {
+            checkout.destroy();
+            checkout = null;
+        }
+        sessionId = null;
+        testResult.className = 'hidden';
+        testResult.replaceChildren();
+        testError.className = 'banner bad hidden';
+        resetBtn.classList.add('hidden');
+        testBtn.disabled = false;
+    }
+    resetBtn.addEventListener('click', resetTest);
+
+    async function fetchPaid() {
+        for (let attempt = 0; attempt < 4; attempt++) {
+            const data = await adminFetch(`admin-test-verify?session_id=${encodeURIComponent(sessionId)}`);
+            if (data.paid) return data;
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+        throw new Error('Stripe has not marked the test session as paid yet. Check the Stripe dashboard.');
+    }
+
+    async function onPaymentComplete() {
+        try {
+            const data = await fetchPaid();
+            const mode = data.livemode ? 'LIVE' : 'TEST';
+            const card = el('div', 'card');
+            card.appendChild(el('div', 'banner ok', `Paid: $${(data.amount / 100).toFixed(2)} ${data.currency.toUpperCase()} in ${mode} mode.`));
+            card.appendChild(el('h3', '', 'PaymentIntent'));
+            card.appendChild(el('p')).appendChild(el('code', '', data.paymentIntentId));
+            const link = el('a', '', 'Open in the Stripe dashboard');
+            link.href = data.dashboardUrl;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            card.appendChild(el('p')).appendChild(link);
+            card.appendChild(el('div', 'banner warn', data.livemode
+                ? 'Reminder: this was a real $1.00 charge. Open the payment in the dashboard and refund it.'
+                : 'Reminder: this is a test-mode payment, so no real money moved. Refunding it is optional.'));
+            card.appendChild(el('p', 'muted', 'No registration, spreadsheet row or email was created.'));
+            testResult.replaceChildren(card);
+            testResult.className = '';
+        } catch (error) {
+            setBanner(testError, 'bad', error.message);
+        }
+    }
+
+    testBtn.addEventListener('click', async () => {
+        resetTest();
+        testBtn.disabled = true;
+        try {
+            if (!secretEl.value) throw new Error('Enter the admin secret first.');
+            const config = await fetch('/.netlify/functions/public-config').then((res) => res.json());
+            if (!config.stripePublishableKey) throw new Error('No publishable key is configured on this deployment.');
+
+            const live = config.stripePublishableKey.startsWith('pk_live_');
+            setBanner(testMode, live ? 'bad' : 'ok', live
+                ? 'LIVE mode: this will charge $1.00 to a real card.'
+                : 'TEST mode: use card 4242 4242 4242 4242, any future expiry, any CVC and ZIP.');
+            if (live && !confirm('This is LIVE mode. A real $1.00 charge will be made to the card you enter. Continue?')) {
+                testMode.className = 'banner hidden';
+                testBtn.disabled = false;
+                return;
+            }
+
+            await loadScriptOnce('https://js.stripe.com/v3/');
+            const stripe = Stripe(config.stripePublishableKey);
+            checkout = await stripe.initEmbeddedCheckout({
+                fetchClientSecret: async () => {
+                    const data = await adminFetch('admin-test-session', { method: 'POST' });
+                    sessionId = data.sessionId;
+                    return data.clientSecret;
+                },
+                onComplete: onPaymentComplete
+            });
+            checkout.mount('#checkout-container');
+            resetBtn.classList.remove('hidden');
+        } catch (error) {
+            setBanner(testError, 'bad', error.message);
+            testBtn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

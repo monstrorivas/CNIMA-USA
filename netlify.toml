@@ -3,6 +3,12 @@
   command = "node scripts/generate-hidden-form.js"
   functions = "netlify/functions"
 
+[[headers]]
+  for = "/admin-test.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
