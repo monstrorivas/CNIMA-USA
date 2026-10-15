@@ -13,6 +13,11 @@ const WORKSHOP_PRICING = {
     week2: { earlybird: 699, full: 799 },
     both: { earlybird: 1398, full: 1598 }
 };
+const DEPOSIT_AMOUNT = 200;
+
+function formatDollars(amount) {
+    return `$${amount.toLocaleString('en-US')}`;
+}
 
 // Public, non-secret identifiers (publishable key / client ID) are fetched
 // from the public-config function rather than hardcoded here, so switching
@@ -101,6 +106,41 @@ async function initRegistrationFlow() {
     const amountDisplay = document.getElementById('payment-amount-display');
     const successEl = document.getElementById('form-success');
     const unavailableEl = document.getElementById('payment-unavailable');
+    const workshopSelect = document.getElementById('workshopSelect');
+    const paymentOptionSelect = document.getElementById('paymentOption');
+    const depositTerms = document.getElementById('deposit-terms');
+    const depositCheckbox = document.getElementById('depositAcknowledged');
+    const depositSummary = document.getElementById('deposit-summary');
+    const defaultDepositSummary = depositSummary.textContent;
+
+    // The non-refundable acknowledgment only exists for the deposit option,
+    // and is only required while it is visible.
+    function updateDepositTerms() {
+        const isDeposit = paymentOptionSelect.value === 'deposit';
+        depositTerms.classList.toggle('hidden', !isDeposit);
+        depositCheckbox.required = isDeposit;
+        const prices = WORKSHOP_PRICING[workshopSelect.value];
+        depositSummary.textContent = prices
+            ? `Pay ${formatDollars(DEPOSIT_AMOUNT)} today to lock in the ${formatDollars(prices.earlybird)} early-bird rate, then ${formatDollars(prices.earlybird - DEPOSIT_AMOUNT)} by February 1, 2027 using the personal link we'll email you. After that date the balance is ${formatDollars(prices.full - DEPOSIT_AMOUNT)} (full tuition).`
+            : defaultDepositSummary;
+    }
+    paymentOptionSelect.addEventListener('change', updateDepositTerms);
+    workshopSelect.addEventListener('change', updateDepositTerms);
+    updateDepositTerms();
+
+    // After the early-bird deadline the server charges full tuition and
+    // refuses deposits, so the form stops offering either.
+    const EARLY_BIRD_ONLY_OPTIONS = ['earlybird', 'deposit'];
+    function applyEarlyBirdAvailability(config) {
+        if (config.earlyBirdOpen !== false) return;
+        EARLY_BIRD_ONLY_OPTIONS.forEach((value) => {
+            const option = paymentOptionSelect.querySelector(`option[value="${value}"]`);
+            if (option) option.remove();
+        });
+        updateDepositTerms();
+    }
+    getPublicConfig().then(applyEarlyBirdAvailability);
+    const defaultErrorHtml = errorEl.innerHTML;
 
     // Stripe's embedded checkout requires a return_url and always redirects
     // the whole page there once payment completes - there's no way to avoid
@@ -113,11 +153,10 @@ async function initRegistrationFlow() {
         paymentStep.classList.add('hidden');
         fetch(`/.netlify/functions/verify-stripe-session?session_id=${encodeURIComponent(returningSessionId)}`)
             .then(res => res.json())
-            .then(({ paid }) => {
+            .then(({ paid, paymentType }) => {
                 history.replaceState(null, '', window.location.pathname + window.location.hash);
                 if (paid) {
-                    successEl.classList.remove('hidden');
-                    successEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    showSuccess(paymentType);
                 } else {
                     form.classList.remove('hidden');
                     errorEl.textContent = "It looks like your payment didn't go through. Please try again below, or email ";
@@ -146,9 +185,24 @@ async function initRegistrationFlow() {
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
+        errorEl.innerHTML = defaultErrorHtml;
         errorEl.classList.add('hidden');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Submitting...';
+
+        // The page may have been open since before the deadline passed.
+        const freshConfig = await fetch('/.netlify/functions/public-config', { cache: 'no-store' })
+            .then((res) => (res.ok ? res.json() : {}))
+            .catch(() => ({}));
+        if (freshConfig.earlyBirdOpen === false && EARLY_BIRD_ONLY_OPTIONS.includes(paymentOptionSelect.value)) {
+            applyEarlyBirdAvailability(freshConfig);
+            errorEl.textContent = 'Early-bird pricing and the deposit option ended on February 1, 2027. Please choose a payment option again.';
+            errorEl.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Continue to Payment';
+            paymentOptionSelect.focus();
+            return;
+        }
 
         // Fresh every submit (not reused across retries): if an earlier
         // submit attempt already landed as its own Netlify Forms submission,
@@ -163,7 +217,13 @@ async function initRegistrationFlow() {
         const formData = new FormData(form);
         const workshop = formData.get('workshop');
         const paymentOption = formData.get('paymentOption');
-        const amount = WORKSHOP_PRICING[workshop] && WORKSHOP_PRICING[workshop][paymentOption];
+        const prices = WORKSHOP_PRICING[workshop];
+        let amountText = '';
+        if (prices && paymentOption === 'deposit') {
+            amountText = `Deposit due now: ${formatDollars(DEPOSIT_AMOUNT)} (balance of ${formatDollars(prices.earlybird - DEPOSIT_AMOUNT)} due by February 1, 2027)`;
+        } else if (prices && prices[paymentOption]) {
+            amountText = `Amount due: ${formatDollars(prices[paymentOption])}`;
+        }
 
         try {
             const encoded = new URLSearchParams(formData).toString();
@@ -182,10 +242,27 @@ async function initRegistrationFlow() {
 
             form.classList.add('hidden');
             paymentStep.classList.remove('hidden');
-            amountDisplay.textContent = amount ? `Amount due: $${amount.toLocaleString()}` : '';
+            amountDisplay.textContent = amountText;
             paymentStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            await initPaymentOptions({ amount, formData, registrationId });
+            const paymentRequest = {
+                workshop,
+                paymentOption,
+                depositAcknowledged: formData.get('depositAcknowledged') === 'yes',
+                registrationId
+            };
+            await mountPaymentOptions({
+                stripeRequest: {
+                    ...paymentRequest,
+                    email: formData.get('email'),
+                    name: `${formData.get('firstName')} ${formData.get('lastName')}`
+                },
+                paypalRequest: paymentRequest,
+                captureRequest: { workshop, paymentOption, registrationId, email: formData.get('email') },
+                unavailableEl,
+                errorEl: document.getElementById('payment-error'),
+                onSuccess: showSuccess
+            });
         } catch (error) {
             console.error('Registration submission failed:', error);
             errorEl.classList.remove('hidden');
@@ -194,121 +271,108 @@ async function initRegistrationFlow() {
         }
     });
 
-    async function initPaymentOptions({ amount, formData, registrationId }) {
-        const config = await getPublicConfig();
-        const stripeReady = !!config.stripePublishableKey;
-        const paypalReady = !!config.paypalClientId;
-
-        if (!stripeReady && !paypalReady) {
-            unavailableEl.classList.remove('hidden');
-            return;
+    function showSuccess(paymentType) {
+        if (paymentType === 'deposit') {
+            document.getElementById('form-success-title').textContent = 'Deposit Received!';
+            document.getElementById('form-success-message').textContent =
+                "Your spot is reserved and your rate is locked in. We've emailed you a receipt with your personal link to pay the balance by February 1, 2027.";
         }
-
-        if (stripeReady) {
-            try {
-                await initStripeEmbeddedCheckout({ amount, formData, registrationId, publishableKey: config.stripePublishableKey });
-            } catch (error) {
-                console.error('Stripe init failed:', error);
-            }
-        }
-
-        if (paypalReady) {
-            try {
-                await initPaypalButtons({ amount, formData, registrationId, clientId: config.paypalClientId });
-            } catch (error) {
-                console.error('PayPal init failed:', error);
-            }
-        }
-    }
-
-    async function initStripeEmbeddedCheckout({ amount, formData, registrationId, publishableKey }) {
-        await loadScriptOnce('https://js.stripe.com/v3/');
-        const stripe = Stripe(publishableKey);
-
-        const checkout = await stripe.initEmbeddedCheckout({
-            fetchClientSecret: async () => {
-                const res = await fetch('/.netlify/functions/create-stripe-session', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        workshop: formData.get('workshop'),
-                        paymentOption: formData.get('paymentOption'),
-                        email: formData.get('email'),
-                        name: `${formData.get('firstName')} ${formData.get('lastName')}`,
-                        registrationId
-                    })
-                });
-                if (!res.ok) throw new Error('Could not create Stripe session');
-                const { clientSecret } = await res.json();
-                return clientSecret;
-            }
-        });
-
-        checkout.mount('#stripe-checkout-container');
-    }
-
-    async function initPaypalButtons({ amount, formData, registrationId, clientId }) {
-        await loadScriptOnce(`https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`);
-
-        const paypalErrorEl = document.getElementById('payment-error');
-
-        paypal.Buttons({
-            createOrder: async () => {
-                const res = await fetch('/.netlify/functions/create-paypal-order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        workshop: formData.get('workshop'),
-                        paymentOption: formData.get('paymentOption')
-                    })
-                });
-                if (!res.ok) throw new Error(`Could not create PayPal order (${res.status})`);
-                const { orderId } = await res.json();
-                return orderId;
-            },
-            onApprove: async (data) => {
-                try {
-                    const res = await fetch('/.netlify/functions/capture-paypal-order', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            orderId: data.orderID,
-                            workshop: formData.get('workshop'),
-                            paymentOption: formData.get('paymentOption'),
-                            registrationId,
-                            email: formData.get('email')
-                        })
-                    });
-                    const result = await res.json();
-                    if (res.ok && result.success) {
-                        paypalErrorEl.classList.add('hidden');
-                        showSuccess();
-                    } else {
-                        console.error('PayPal capture did not complete:', result);
-                        paypalErrorEl.classList.remove('hidden');
-                    }
-                } catch (error) {
-                    console.error('PayPal capture request failed:', error);
-                    paypalErrorEl.classList.remove('hidden');
-                }
-            },
-            onError: (error) => {
-                console.error('PayPal button error:', error);
-                paypalErrorEl.classList.remove('hidden');
-            }
-        }).render('#paypal-button-container');
-    }
-
-    function showSuccess() {
         paymentStep.classList.add('hidden');
         successEl.classList.remove('hidden');
         successEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+}
 
-    // Stripe's embedded checkout calls this via its own return/complete
-    // flow in a full implementation; exposed here so create-stripe-session's
-    // companion webhook/redirect handling can call it if wired up that way.
-    window.__cnimaShowRegistrationSuccess = showSuccess;
+// Renders the embedded Stripe checkout and the PayPal buttons side by side.
+// Shared by the registration form and the pay-balance page; the request
+// bodies only say what is being paid for - every amount is worked out
+// server-side.
+async function mountPaymentOptions({ stripeRequest, paypalRequest, captureRequest, unavailableEl, errorEl, onSuccess }) {
+    const config = await getPublicConfig();
+    const stripeReady = !!config.stripePublishableKey;
+    const paypalReady = !!config.paypalClientId;
+
+    if (!stripeReady && !paypalReady) {
+        unavailableEl.classList.remove('hidden');
+        return;
+    }
+
+    if (stripeReady) {
+        try {
+            await mountStripeCheckout({ requestBody: stripeRequest, publishableKey: config.stripePublishableKey });
+        } catch (error) {
+            console.error('Stripe init failed:', error);
+        }
+    }
+
+    if (paypalReady) {
+        try {
+            await mountPaypalButtons({ requestBody: paypalRequest, captureRequest, clientId: config.paypalClientId, errorEl, onSuccess });
+        } catch (error) {
+            console.error('PayPal init failed:', error);
+        }
+    }
+}
+
+async function mountStripeCheckout({ requestBody, publishableKey }) {
+    await loadScriptOnce('https://js.stripe.com/v3/');
+    const stripe = Stripe(publishableKey);
+
+    const checkout = await stripe.initEmbeddedCheckout({
+        fetchClientSecret: async () => {
+            const res = await fetch('/.netlify/functions/create-stripe-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
+            if (!res.ok) throw new Error('Could not create Stripe session');
+            const { clientSecret } = await res.json();
+            return clientSecret;
+        }
+    });
+
+    checkout.mount('#stripe-checkout-container');
+}
+
+async function mountPaypalButtons({ requestBody, captureRequest, clientId, errorEl, onSuccess }) {
+    await loadScriptOnce(`https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`);
+
+    paypal.Buttons({
+        createOrder: async () => {
+            const res = await fetch('/.netlify/functions/create-paypal-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
+            if (!res.ok) throw new Error(`Could not create PayPal order (${res.status})`);
+            const { orderId } = await res.json();
+            return orderId;
+        },
+        onApprove: async (data) => {
+            try {
+                const res = await fetch('/.netlify/functions/capture-paypal-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderId: data.orderID, ...captureRequest })
+                });
+                const result = await res.json();
+                if (res.ok && result.success) {
+                    errorEl.classList.add('hidden');
+                    onSuccess(result.paymentType);
+                } else {
+                    console.error('PayPal capture did not complete:', result);
+                    errorEl.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('PayPal capture request failed:', error);
+                errorEl.classList.remove('hidden');
+            }
+        },
+        onError: (error) => {
+            console.error('PayPal button error:', error);
+            errorEl.classList.remove('hidden');
+        }
+    }).render('#paypal-button-container');
 }
 
 function loadScriptOnce(src) {

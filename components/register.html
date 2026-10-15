@@ -82,9 +82,18 @@
                 <label for="paymentOption">Payment Option *</label>
                 <select id="paymentOption" name="paymentOption" required>
                     <option value="">Select...</option>
-                    <option value="earlybird">Early Bird (if paid by February 1, 2027)</option>
+                    <option value="earlybird">Early Bird (paid by Feb 1, 2027)</option>
                     <option value="full">Full Tuition</option>
+                    <option value="deposit">$200 deposit, balance by Feb 1</option>
                 </select>
+            </div>
+
+            <div id="deposit-terms" class="deposit-terms hidden">
+                <p id="deposit-summary">Pay a $200 deposit today to lock in the early-bird rate. We'll email you a personal link to pay the balance by February 1, 2027; after that date the balance is based on full tuition.</p>
+                <label class="checkbox-label" for="depositAcknowledged">
+                    <input type="checkbox" id="depositAcknowledged" name="depositAcknowledged" value="yes">
+                    <span>I understand the $200 deposit is non-refundable. *</span>
+                </label>
             </div>
 
             <div class="form-group">
@@ -123,8 +132,10 @@
         </div>
 
         <div id="form-success" class="form-success hidden">
-            <h3>You're Registered!</h3>
-            <p>Thank you for registering and completing payment. You should receive a confirmation email shortly.</p>
+            <h3 id="form-success-title">You're Registered!</h3>
+            <p id="form-success-message">Thank you for registering and completing payment. You should receive a confirmation email shortly.</p>
         </div>
+
+        <p class="balance-link-note">Already paid a deposit? <a href="/pay-balance.html">Pay your balance</a>.</p>
     </div>
 </section>

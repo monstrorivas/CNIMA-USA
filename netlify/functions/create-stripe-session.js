@@ -1,5 +1,6 @@
 const Stripe = require('stripe');
-const { getPrice, WORKSHOP_LABELS } = require('./_shared/workshop-2027');
+const { resolvePayment, PaymentRequestError } = require('./_shared/resolve-payment');
+const { balanceLinkQuery } = require('./_shared/balance-link');
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
@@ -13,17 +14,26 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: 'Invalid JSON' };
     }
 
-    const { workshop, paymentOption, email, name, registrationId } = payload;
-
-    let amount;
+    let payment;
     try {
-        amount = getPrice(workshop, paymentOption);
+        payment = await resolvePayment(payload);
     } catch (error) {
-        return { statusCode: 400, body: error.message };
+        if (error instanceof PaymentRequestError) {
+            return { statusCode: error.statusCode, body: error.message };
+        }
+        console.error('Could not work out the amount to charge:', error);
+        return { statusCode: 500, body: 'Could not create Stripe session' };
     }
 
+    const email = payment.email || payload.email;
+    const name = payment.name || payload.name;
     const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
     const origin = event.headers.origin || `https://${event.headers.host}`;
+    // The balance page comes back to itself; everything else to the
+    // registration section.
+    const returnPage = payment.paymentType === 'balance'
+        ? `/pay-balance.html?${balanceLinkQuery(payment.registrationId)}&`
+        : '/?';
 
     try {
         const session = await stripe.checkout.sessions.create({
@@ -39,26 +49,31 @@ exports.handler = async (event) => {
             line_items: [{
                 price_data: {
                     currency: 'usd',
-                    unit_amount: amount * 100,
-                    product_data: {
-                        name: `CNIMA USA 2027 Workshop - ${WORKSHOP_LABELS[workshop]}`
-                    }
+                    unit_amount: payment.amount * 100,
+                    product_data: { name: payment.description }
                 },
                 quantity: 1
             }],
-            metadata: { name: name || '', workshop, paymentOption, registrationId: registrationId || '' },
+            metadata: {
+                name: name || '',
+                workshop: payment.workshop,
+                paymentOption: payment.paymentOption || '',
+                paymentType: payment.paymentType,
+                registrationId: payment.registrationId || '',
+                depositAcknowledgedAt: payment.depositAcknowledgedAt || ''
+            },
             // Embedded Checkout requires a return_url - Stripe always
             // redirects the whole page here once payment completes, even
             // in embedded mode. The {CHECKOUT_SESSION_ID} placeholder is
             // replaced by Stripe with the real session ID before redirecting,
             // which the page uses to verify and show a success state.
-            return_url: `${origin}/?session_id={CHECKOUT_SESSION_ID}#register`
+            return_url: `${origin}${returnPage}session_id={CHECKOUT_SESSION_ID}${payment.paymentType === 'balance' ? '' : '#register'}`
         });
 
         return {
             statusCode: 200,
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ clientSecret: session.client_secret })
+            body: JSON.stringify({ clientSecret: session.client_secret, amount: payment.amount })
         };
     } catch (error) {
         console.error('Stripe session creation failed:', error);

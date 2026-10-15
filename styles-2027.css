@@ -740,6 +740,90 @@ a {
     color: rgba(18, 38, 43, 0.8);
 }
 
+/* Deposit option: what it costs and the non-refundable acknowledgment */
+.deposit-terms {
+    background: rgba(243, 177, 32, 0.1);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.deposit-terms p {
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.checkbox-label input {
+    flex-shrink: 0;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.3rem;
+    accent-color: var(--gold);
+}
+
+.balance-link-note {
+    text-align: center;
+    margin-top: 2rem;
+    color: var(--muted);
+}
+
+/* Pay-balance page */
+.balance-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.balance-workshop {
+    margin-bottom: 1rem;
+}
+
+.balance-note {
+    font-size: 0.95rem;
+    color: rgba(18, 38, 43, 0.8);
+    margin: -0.75rem 0 1.5rem;
+}
+
+.balance-lookup p {
+    color: rgba(18, 38, 43, 0.8);
+}
+
+.balance-lookup form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.balance-lookup input[type="email"] {
+    flex: 1 1 220px;
+    min-width: 0;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 2px solid var(--bg-elevated);
+    font: inherit;
+}
+
+.balance-lookup input[type="email"]:focus {
+    outline: 2px solid var(--gold);
+    border-color: var(--gold);
+}
+
+.balance-lookup .balance-lookup-done {
+    margin-top: 1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
 /* Contact */
 .contact-intro {
     text-align: center;

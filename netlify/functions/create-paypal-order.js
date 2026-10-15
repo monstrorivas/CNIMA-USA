@@ -1,5 +1,5 @@
-const { getPrice, WORKSHOP_LABELS } = require('./_shared/workshop-2027');
 const { PAYPAL_API_BASE, getAccessToken } = require('./_shared/paypal-client');
+const { resolvePayment, toPaypalCustomId, PaymentRequestError } = require('./_shared/resolve-payment');
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
@@ -13,13 +13,15 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: 'Invalid JSON' };
     }
 
-    const { workshop, paymentOption } = payload;
-
-    let amount;
+    let payment;
     try {
-        amount = getPrice(workshop, paymentOption);
+        payment = await resolvePayment(payload);
     } catch (error) {
-        return { statusCode: 400, body: error.message };
+        if (error instanceof PaymentRequestError) {
+            return { statusCode: error.statusCode, body: error.message };
+        }
+        console.error('Could not work out the amount to charge:', error);
+        return { statusCode: 500, body: 'Could not create PayPal order' };
     }
 
     try {
@@ -33,8 +35,9 @@ exports.handler = async (event) => {
             body: JSON.stringify({
                 intent: 'CAPTURE',
                 purchase_units: [{
-                    description: `CNIMA USA 2027 Workshop - ${WORKSHOP_LABELS[workshop]}`,
-                    amount: { currency_code: 'USD', value: amount.toFixed(2) }
+                    description: payment.description,
+                    custom_id: toPaypalCustomId(payment),
+                    amount: { currency_code: 'USD', value: payment.amount.toFixed(2) }
                 }]
             })
         });

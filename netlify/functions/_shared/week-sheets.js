@@ -1,6 +1,6 @@
 const {
     appendRegistrationIfNew,
-    markRegistrationPaidWithRetry,
+    updatePaymentWithRetry,
     editableTarget
 } = require('./registrations-sheet');
 
@@ -33,22 +33,33 @@ async function appendToWeekSheets(sheetId, accessToken, { submissionId, data }) 
 }
 
 // The registrant paid once, so a both-weeks payment is split evenly across
-// the two rows (the early-bird and full prices for "both" are exactly twice
-// a single week). Summing the Week 1 and Week 2 tabs then matches what was
-// actually collected instead of counting it twice.
-async function markPaidInWeekSheets(sheetId, accessToken, { registrationId, provider, amount, workshop, fallbackData }) {
+// the two rows (the deposit-locked, early-bird and full totals for "both"
+// are all split the same way). Summing the Week 1 and Week 2 tabs then
+// matches what was actually collected, and still owed, instead of counting
+// it twice.
+const SPLIT_FIELDS = ['amount_paid', 'balance_due'];
+
+function splitAcrossWeeks(fields, weekCount) {
+    const split = { ...fields };
+    SPLIT_FIELDS.forEach((field) => {
+        if (typeof split[field] === 'number') split[field] = split[field] / weekCount;
+    });
+    return split;
+}
+
+async function updatePaymentInWeekSheets(sheetId, accessToken, { registrationId, workshop, fields, fallbackData }) {
     const weeks = weeksFor(workshop);
-    const amountPerWeek = amount != null ? amount / weeks.length : amount;
+    const fieldsPerWeek = splitAcrossWeeks(fields, weeks.length);
     return settleAll(
         weeks.map((week) =>
-            markRegistrationPaidWithRetry(
+            updatePaymentWithRetry(
                 sheetId,
                 accessToken,
-                { registrationId, provider, amount: amountPerWeek, fallbackData },
+                { registrationId, fields: fieldsPerWeek, fallbackData },
                 editableTarget(WEEK_TABS[week])
             )
         )
     );
 }
 
-module.exports = { appendToWeekSheets, markPaidInWeekSheets, weeksFor, WEEK_TABS };
+module.exports = { appendToWeekSheets, updatePaymentInWeekSheets, weeksFor, WEEK_TABS };

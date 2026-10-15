@@ -1,7 +1,6 @@
-const { getPrice, WORKSHOP_LABELS } = require('./_shared/workshop-2027');
 const { PAYPAL_API_BASE, getAccessToken } = require('./_shared/paypal-client');
-const { notifyPaymentComplete } = require('./_shared/notify-payment-complete');
-const { recordPaymentInSheets } = require('./_shared/record-payment');
+const { processPayment } = require('./_shared/process-payment');
+const { fromPaypalCustomId, findRegistration } = require('./_shared/resolve-payment');
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
@@ -15,7 +14,7 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: 'Invalid JSON' };
     }
 
-    const { orderId, workshop, paymentOption, registrationId, email: formEmail } = payload;
+    const { orderId, email: formEmail } = payload;
     if (!orderId) {
         return { statusCode: 400, body: 'Missing orderId' };
     }
@@ -41,47 +40,58 @@ exports.handler = async (event) => {
         }
 
         const completed = res.ok && capture.status === 'COMPLETED';
+        let paymentType;
 
         if (completed) {
-            // Use PayPal's own confirmed payer details rather than trusting
-            // whatever the client claims - same principle as never trusting
-            // a client-supplied price.
+            // What was paid for and how much come from PayPal's own record
+            // of the order (custom_id was set server-side at creation), and
+            // so do the payer details - never from what the client claims,
+            // same principle as never trusting a client-supplied price.
+            const unit = (capture.purchase_units || [])[0] || {};
+            const captured = ((unit.payments && unit.payments.captures) || [])[0] || {};
+            const order = fromPaypalCustomId(unit.custom_id || captured.custom_id);
+            const workshop = order.workshop || payload.workshop;
+            const registrationId = order.registrationId || payload.registrationId;
+            paymentType = order.paymentType || 'full';
+            const amount = captured.amount ? Number(captured.amount.value) : null;
+
             const payer = capture.payer || {};
-            const name = [payer.name && payer.name.given_name, payer.name && payer.name.surname]
+            let name = [payer.name && payer.name.given_name, payer.name && payer.name.surname]
                 .filter(Boolean)
                 .join(' ');
-            let amount = null;
-            try {
-                amount = getPrice(workshop, paymentOption);
-            } catch {
-                // Unknown workshop/paymentOption combo - still notify, just without an amount.
+            let registeredEmail = formEmail;
+            if (paymentType === 'balance') {
+                try {
+                    const registration = await findRegistration(registrationId);
+                    if (registration) {
+                        registeredEmail = registration.email;
+                        name = `${registration.firstName} ${registration.lastName}`.trim() || name;
+                    }
+                } catch (error) {
+                    console.error('Could not look up the registration for this balance payment:', error);
+                }
             }
 
-            await notifyPaymentComplete({
+            await processPayment({
+                ref: orderId,
                 provider: 'paypal',
+                paymentType,
+                registrationId,
+                workshop,
+                amount,
                 name,
                 // PayPal's own payer email, plus whatever was typed into our
                 // registration form - the sandbox/real buyer's PayPal account
                 // can genuinely be a different address than the form, unlike
                 // Stripe's prefilled-and-locked email field.
-                email: [payer.email_address, formEmail],
-                workshop,
-                workshopLabel: workshop ? WORKSHOP_LABELS[workshop] : undefined,
-                paymentOption,
-                amount
-            });
-
-            await recordPaymentInSheets({
-                registrationId,
-                provider: 'paypal',
-                amount,
-                workshop,
+                email: [payer.email_address, registeredEmail],
+                depositAcknowledgedAt: order.depositAcknowledgedAt,
                 fallbackData: {
                     firstName: payer.name && payer.name.given_name,
                     lastName: payer.name && payer.name.surname,
-                    email: payer.email_address || formEmail,
+                    email: payer.email_address || registeredEmail,
                     workshop,
-                    paymentOption
+                    paymentOption: paymentType === 'deposit' ? 'deposit' : payload.paymentOption
                 }
             });
         }
@@ -92,6 +102,7 @@ exports.handler = async (event) => {
             body: JSON.stringify({
                 success: completed,
                 status: capture.status,
+                paymentType,
                 // PayPal's own error name/detail, not sensitive - useful for
                 // diagnosing a failed capture from the browser console.
                 details: completed ? undefined : (capture.name || capture.message)

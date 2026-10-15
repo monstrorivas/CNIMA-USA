@@ -11,13 +11,18 @@ const DATA_FIELDS = [
 // rather than inserted in between.
 const TRACKING_FIELDS = ['submission_id', 'synced_at'];
 const PAYMENT_FIELDS = ['registrationId', 'paid', 'payment_provider', 'amount_paid', 'paid_at'];
-const HEADERS = [...DATA_FIELDS, ...TRACKING_FIELDS, ...PAYMENT_FIELDS];
+// Deposit/balance tracking, appended after paid_at for the same reason.
+const BALANCE_FIELDS = ['payment_status', 'balance_due', 'balance_paid_at', 'deposit_acknowledged_at'];
+const HEADERS = [...DATA_FIELDS, ...TRACKING_FIELDS, ...PAYMENT_FIELDS, ...BALANCE_FIELDS];
 
 function columnLetter(index) {
     return String.fromCharCode(65 + index);
 }
 
-const LAST_COLUMN = columnLetter(HEADERS.length - 1); // U for 21 columns
+const LAST_COLUMN = columnLetter(HEADERS.length - 1); // Y for 25 columns
+const REGISTRATION_ID_COL = HEADERS.indexOf('registrationId');
+// Everything a payment can change lives in one contiguous block, paid..Y.
+const FIRST_PAYMENT_COL = HEADERS.indexOf('paid');
 
 // Where rows get written. The master "Registrations" tab is the read-only
 // source of truth, so this code owns its header row and keeps it current.
@@ -86,21 +91,37 @@ async function appendRow(sheetId, accessToken, target, row) {
 }
 
 function buildDataRow(registrationId, submissionId, data) {
-    return [
-        ...DATA_FIELDS.map((field) => data[field] || ''),
-        submissionId || '',
-        new Date().toISOString(),
-        registrationId || '',
-        '', '', '', '' // paid, payment_provider, amount_paid, paid_at - blank until paid
-    ];
+    const row = HEADERS.map(() => '');
+    DATA_FIELDS.forEach((field, i) => {
+        row[i] = data[field] || '';
+    });
+    row[HEADERS.indexOf('submission_id')] = submissionId || '';
+    row[HEADERS.indexOf('synced_at')] = new Date().toISOString();
+    row[REGISTRATION_ID_COL] = registrationId || '';
+    row[HEADERS.indexOf('payment_status')] = 'unpaid';
+    return row;
+}
+
+// A field value can be a function of the cell's current text, for values
+// that build on what is already there (e.g. the provider list).
+function resolveField(fields, header, current) {
+    if (!Object.hasOwn(fields, header)) return current;
+    const value = fields[header];
+    return typeof value === 'function' ? value(current) : value;
+}
+
+function applyPaymentFields(row, fields) {
+    return HEADERS.slice(FIRST_PAYMENT_COL).map((header, i) =>
+        resolveField(fields, header, row[FIRST_PAYMENT_COL + i] || '')
+    );
 }
 
 // Appends one registration row if its submission ID isn't already present -
 // safe to call more than once for the same submission (Netlify can retry a
 // webhook delivery), and preserves anything added by hand in the sheet
 // since it only ever appends, never overwrites existing rows. Written at
-// submission time, before payment - the paid/payment fields start blank and
-// are filled in later by markRegistrationPaidWithRetry.
+// submission time, before payment - the payment fields start blank (status
+// "unpaid") and are filled in later by updatePaymentWithRetry.
 async function appendRegistrationIfNew(sheetId, accessToken, { submissionId, data }, target = MASTER_TARGET) {
     const { rows, looksLikeHeader } = await readSheet(sheetId, accessToken, target);
     const submissionIdCol = HEADERS.indexOf('submission_id');
@@ -115,36 +136,29 @@ async function appendRegistrationIfNew(sheetId, accessToken, { submissionId, dat
     return { appended: true };
 }
 
-// Finds the row written at submission time (by registrationId) and marks it
-// paid in place. Returns {updated: false} if no matching row exists yet
-// (e.g. the submission webhook hasn't landed) rather than creating one
-// itself - markRegistrationPaidWithRetry decides whether to retry or fall
-// back to appending.
-async function markRegistrationPaid(sheetId, accessToken, { registrationId, provider, amount }, target = MASTER_TARGET) {
+// Finds the row written at submission time (by registrationId) and writes
+// the given payment fields into it in place, leaving the other payment
+// columns as they are. Returns {updated: false} if no matching row exists
+// yet (e.g. the submission webhook hasn't landed) rather than creating one
+// itself - updatePaymentWithRetry decides whether to retry or fall back to
+// appending.
+async function updatePayment(sheetId, accessToken, { registrationId, fields }, target = MASTER_TARGET) {
     if (!registrationId) {
         return { updated: false };
     }
 
     const { rows } = await readSheet(sheetId, accessToken, target);
-    const registrationIdCol = HEADERS.indexOf('registrationId');
-    const paidCol = HEADERS.indexOf('paid');
-
-    const rowIndex = rows.findIndex((row) => row[registrationIdCol] === registrationId);
+    const rowIndex = rows.findIndex((row) => row[REGISTRATION_ID_COL] === registrationId);
     if (rowIndex === -1) {
         return { updated: false };
     }
 
     const sheetRowNumber = rowIndex + 1; // rows is 0-indexed, sheet rows are 1-indexed
-    const range = a1(target.tab, `${columnLetter(paidCol)}${sheetRowNumber}:${columnLetter(paidCol + 3)}${sheetRowNumber}`);
+    const range = a1(target.tab, `${columnLetter(FIRST_PAYMENT_COL)}${sheetRowNumber}:${LAST_COLUMN}${sheetRowNumber}`);
     await sheetsRequest(
         `${sheetId}/values/${encodeURIComponent(range)}?valueInputOption=RAW`,
         accessToken,
-        {
-            method: 'PUT',
-            body: JSON.stringify({
-                values: [['yes', provider || '', amount != null ? amount : '', new Date().toISOString()]]
-            })
-        }
+        { method: 'PUT', body: JSON.stringify({ values: [applyPaymentFields(rows[rowIndex], fields)] }) }
     );
     return { updated: true };
 }
@@ -157,12 +171,12 @@ async function markRegistrationPaid(sheetId, accessToken, { registrationId, prov
 // won't have the registrant's full form data (address, skill level, etc.) -
 // only whatever's passed in fallbackData - since that's all that's known if
 // the original row truly never shows up.
-async function markRegistrationPaidWithRetry(sheetId, accessToken, { registrationId, provider, amount, fallbackData = {} }, target = MASTER_TARGET) {
+async function updatePaymentWithRetry(sheetId, accessToken, { registrationId, fields, fallbackData = {} }, target = MASTER_TARGET) {
     const maxAttempts = 3;
     const delayMs = 1500;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        const { updated } = await markRegistrationPaid(sheetId, accessToken, { registrationId, provider, amount }, target);
+        const { updated } = await updatePayment(sheetId, accessToken, { registrationId, fields }, target);
         if (updated) {
             return { updated: true, appendedFallback: false };
         }
@@ -174,11 +188,7 @@ async function markRegistrationPaidWithRetry(sheetId, accessToken, { registratio
     console.warn(`No row found in "${target.tab}" for registrationId ${registrationId} after ${maxAttempts} attempts - appending a fallback row instead of losing this payment.`);
 
     const row = buildDataRow(registrationId, '', fallbackData);
-    const paidCol = HEADERS.indexOf('paid');
-    row[paidCol] = 'yes';
-    row[paidCol + 1] = provider || '';
-    row[paidCol + 2] = amount != null ? amount : '';
-    row[paidCol + 3] = new Date().toISOString();
+    row.splice(FIRST_PAYMENT_COL, HEADERS.length - FIRST_PAYMENT_COL, ...applyPaymentFields(row, fields));
 
     const { rows, looksLikeHeader } = await readSheet(sheetId, accessToken, target);
     await ensureHeader(sheetId, accessToken, target, rows, looksLikeHeader);
@@ -187,11 +197,29 @@ async function markRegistrationPaidWithRetry(sheetId, accessToken, { registratio
     return { updated: false, appendedFallback: true };
 }
 
+// Every row below the header as {header: value}, plus its sheet row number.
+async function readRegistrations(sheetId, accessToken, target = MASTER_TARGET) {
+    const { rows, looksLikeHeader } = await readSheet(sheetId, accessToken, target);
+    const firstDataRow = looksLikeHeader ? 1 : 0;
+    return rows.slice(firstDataRow).map((row, i) => ({
+        rowNumber: firstDataRow + i + 1,
+        ...Object.fromEntries(HEADERS.map((header, j) => [header, row[j] || '']))
+    }));
+}
+
+// Rows written before deposits existed have no payment_status, only paid.
+function paymentStatusOf(registration) {
+    return registration.payment_status || (registration.paid === 'yes' ? 'paid' : 'unpaid');
+}
+
 module.exports = {
     appendRegistrationIfNew,
-    markRegistrationPaidWithRetry,
+    updatePaymentWithRetry,
+    readRegistrations,
+    paymentStatusOf,
     MASTER_TARGET,
     editableTarget,
+    a1,
     DATA_FIELDS,
     HEADERS
 };
