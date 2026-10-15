@@ -121,7 +121,7 @@ async function initRegistrationFlow() {
         depositCheckbox.required = isDeposit;
         const prices = WORKSHOP_PRICING[workshopSelect.value];
         depositSummary.textContent = prices
-            ? `Pay ${formatDollars(DEPOSIT_AMOUNT)} today to lock in the ${formatDollars(prices.earlybird)} early-bird rate, then ${formatDollars(prices.earlybird - DEPOSIT_AMOUNT)} by February 1, 2027 using the personal link we'll email you. After that date the balance is ${formatDollars(prices.full - DEPOSIT_AMOUNT)} (full tuition).`
+            ? `Pay ${formatDollars(DEPOSIT_AMOUNT)} today to lock in the ${formatDollars(prices.earlybird)} early-bird rate, then ${formatDollars(prices.earlybird - DEPOSIT_AMOUNT)} by February 1, 2027 using the personal link we'll email you.`
             : defaultDepositSummary;
     }
     paymentOptionSelect.addEventListener('change', updateDepositTerms);
