@@ -836,17 +836,15 @@ a {
     margin: 1rem 0 0;
 }
 
-/* Two matching cards, one per way to stay connected, with the action of
-   each pinned to the bottom so the buttons line up. */
+/* The mailing list card on Contact and the YouTube card on Testimonials share
+   one look: a quiet outlined card with a gold action. */
 .contact-cards {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.5rem;
-    max-width: 820px;
+    max-width: 440px;
     margin: 0 auto;
 }
 
-.contact-card {
+.contact-card,
+.more-videos {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -857,36 +855,42 @@ a {
     background: rgba(247, 241, 227, 0.05);
 }
 
-.contact-card h3 {
+.contact-card h3,
+.more-videos h3 {
     color: var(--white);
     font-size: 1.25rem;
     margin-bottom: 0.5rem;
 }
 
-.contact-card p {
+.contact-card p,
+.more-videos p {
     color: var(--muted);
     margin-bottom: 1.25rem;
 }
 
 /* Red barely reads against the navy page, so both card actions use the
    same gold as the hero's. */
-.contact-card .btn-primary {
+.contact-card .btn-primary,
+.more-videos .btn-primary {
     background: var(--gold);
     color: var(--text-dark);
 }
 
-.contact-card .btn-primary:hover {
+.contact-card .btn-primary:hover,
+.more-videos .btn-primary:hover {
     background: var(--gold-deep);
 }
 
 .contact-card > .btn,
+.more-videos > .btn,
 .contact-card > .mailing-list-form {
     margin-top: auto;
 }
 
 /* A link and a <button> start with different font sizes, so set both the
    same to keep the two actions visually matched. */
-.contact-card .btn {
+.contact-card .btn,
+.more-videos .btn {
     font: inherit;
     font-weight: 800;
     padding: 0.75rem 1.5rem;
@@ -924,31 +928,109 @@ a {
     margin-top: 2rem;
 }
 
-/* Testimonials */
+/* Testimonials: vertical phone videos (YouTube Shorts) in the same cream and
+   gold frame as the other cards, caption inside the frame under the video.
+   Each starts as a local poster image; the YouTube player only loads when
+   someone presses play, so the page makes no third-party requests until then. */
 .testimonials-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
     padding: 1rem 0 3rem;
 }
 
 .testimonial-card {
+    display: flex;
+    flex-direction: column;
     background: var(--cream);
     color: var(--text-dark);
     border: 3px solid var(--gold);
     border-radius: 16px;
-    padding: 2rem;
+    padding: 0.5rem;
     box-shadow: var(--shadow);
 }
 
-.testimonial-quote {
-    font-style: italic;
-    margin-bottom: 1rem;
+.testimonial-video {
+    position: relative;
+    display: block;
+    aspect-ratio: 9 / 16;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-deep);
+}
+
+.testimonial-video img,
+.testimonial-video iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    object-fit: cover;
+}
+
+.testimonial-play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(14, 42, 63, 0.22);
+    transition: background-color 0.15s ease;
+}
+
+.testimonial-play::before {
+    content: "";
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    transition: transform 0.15s ease;
+}
+
+.testimonial-play::after {
+    content: "";
+    position: absolute;
+    border-style: solid;
+    border-width: 0.6rem 0 0.6rem 1rem;
+    border-color: transparent transparent transparent var(--text-dark);
+    transform: translateX(0.12rem);
+}
+
+.testimonial-video:hover .testimonial-play,
+.testimonial-video:focus-visible .testimonial-play {
+    background: rgba(14, 42, 63, 0.05);
+}
+
+.testimonial-video:hover .testimonial-play::before,
+.testimonial-video:focus-visible .testimonial-play::before {
+    transform: scale(1.08);
+}
+
+.testimonial-video:focus-visible {
+    outline: 3px solid var(--red-deep);
+    outline-offset: 2px;
+}
+
+.testimonial-caption {
+    padding: 0.7rem 0.5rem 0.4rem;
 }
 
 .testimonial-name {
-    font-weight: 700;
+    font-weight: 800;
     color: var(--red-deep);
+    line-height: 1.3;
+}
+
+.testimonial-place {
+    font-size: 0.9rem;
+    color: rgba(18, 38, 43, 0.75);
+    line-height: 1.4;
+}
+
+.more-videos {
+    max-width: 480px;
+    margin: 0 auto 3rem;
 }
 
 .testimonials-cta {
@@ -1065,10 +1147,22 @@ a {
     }
 }
 
-@media (max-width: 768px) {
-    .contact-cards {
-        grid-template-columns: minmax(0, 1fr);
-        max-width: 440px;
+@media (max-width: 760px) {
+    .testimonials-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .testimonial-caption {
+        padding: 0.6rem 0.35rem 0.3rem;
+    }
+
+    .testimonial-name {
+        font-size: 0.95rem;
+    }
+
+    .testimonial-place {
+        font-size: 0.8rem;
     }
 }
 
