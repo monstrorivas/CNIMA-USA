@@ -22,13 +22,13 @@ exports.handler = async (event) => {
                 price_data: {
                     currency: 'usd',
                     unit_amount: 100,
-                    product_data: { name: 'CNIMA USA admin test payment ($1) - refund me' }
+                    product_data: { name: 'CNIMA USA admin test payment ($1)' }
                 },
                 quantity: 1
             }],
             metadata: { adminTest: 'true' },
             payment_intent_data: {
-                description: 'CNIMA USA admin test payment - refund me',
+                description: 'CNIMA USA admin test payment',
                 metadata: { adminTest: 'true' }
             }
         });

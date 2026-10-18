@@ -60,4 +60,8 @@ function redact(text) {
         .slice(0, 300);
 }
 
-module.exports = { checkAdmin, json, redact };
+// Marks the $1 PayPal orders this tool creates, so the capture endpoint can
+// refuse to touch any other order (e.g. a real registration's).
+const ADMIN_TEST_PAYPAL_CUSTOM_ID = 'adminTest';
+
+module.exports = { checkAdmin, json, redact, ADMIN_TEST_PAYPAL_CUSTOM_ID };

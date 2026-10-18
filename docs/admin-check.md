@@ -8,6 +8,8 @@ An unlinked, admin-only page for verifying the payment/export/email setup on any
 | Read-only health check | `netlify/functions/admin-check.js` |
 | Creates the $1 embedded Checkout Session | `netlify/functions/admin-test-session.js` |
 | Confirms the $1 payment, returns PaymentIntent id + dashboard link | `netlify/functions/admin-test-verify.js` |
+| Reports PayPal sandbox/live mode; creates the $1 PayPal order | `netlify/functions/admin-test-paypal-order.js` |
+| Captures the approved $1 PayPal order (refuses any other order) | `netlify/functions/admin-test-paypal-capture.js` |
 | Secret check, redaction | `netlify/functions/_shared/admin-auth.js` |
 
 None of it touches the registration functions, writes to Google Sheets or sends email.
@@ -37,7 +39,7 @@ Run health check shows green PASS / amber WARN / red FAIL rows:
 
 Responses contain masked prefixes and modes only, never secret values.
 
-## 2. $1 test payment
+## 2. $1 card test (Stripe)
 
 Start $1 test mounts the same embedded Stripe Checkout used for registration, for exactly $1.00. The page says whether it is TEST or LIVE mode first (live asks for confirmation).
 
@@ -46,10 +48,20 @@ Start $1 test mounts the same embedded Stripe Checkout used for registration, fo
 - **Live mode: refund the $1 in the Stripe dashboard** (open the link -> Refund). The app deliberately doesn't ask for Refunds permission.
 - The payment is tagged `adminTest=true` (session and PaymentIntent metadata) so it is easy to find. Stripe may email its own receipt to the address entered at checkout; the site sends nothing.
 
+## 3. $1 PayPal test
+
+Start $1 PayPal test shows the same PayPal buttons as registration, for exactly $1.00. The page says whether PayPal is in SANDBOX or LIVE mode first (live asks for confirmation).
+
+- Sandbox: log in with a PayPal sandbox buyer account (developer.paypal.com -> Testing tools -> Sandbox accounts). No real money moves.
+- After approving, the page shows the PayPal transaction ID and the payer's email.
+- **Live mode: refund the $1 in PayPal** (Activity -> find the transaction ID -> Refund). PayPal may keep its processing fee on a refunded payment. The app deliberately has no refund button.
+- The order is tagged `custom_id = adminTest`, and the capture endpoint refuses any order that isn't one of these $1 test orders, so it can never be pointed at a real registration payment.
+- It writes nothing to Google Sheets and sends no email.
+
 ## Checklist for going live
 
 1. Switch `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` and `PAYPAL_MODE=live` in Netlify.
 2. Set `ADMIN_CHECK_SECRET` and redeploy.
 3. Run the health check: everything PASS, "Stripe and PayPal modes agree".
-4. Run the $1 test with a real card, then refund it.
+4. Run the $1 card test with a real card and the $1 PayPal test with a real PayPal account, then refund both.
 5. Optionally unset `ADMIN_CHECK_SECRET` afterwards to disable the tools again.
