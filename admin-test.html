@@ -90,7 +90,7 @@
     </section>
 
     <section class="card">
-        <h2>2. $1 test payment</h2>
+        <h2>2. $1 card test (Stripe)</h2>
         <p class="muted">Charges exactly $1.00 through the same embedded Stripe Checkout as registration. Creates no registration and no spreadsheet row, and sends no email. Afterwards, refund it in the Stripe dashboard.</p>
         <div id="test-mode" class="banner hidden"></div>
         <div class="actions">
@@ -100,6 +100,19 @@
         <div id="test-error" class="banner bad hidden" role="alert"></div>
         <div id="checkout-container"></div>
         <div id="test-result" class="hidden"></div>
+    </section>
+
+    <section class="card">
+        <h2>3. $1 PayPal test</h2>
+        <p class="muted">Charges exactly $1.00 through PayPal, using the same PayPal buttons as registration. Creates no registration and no spreadsheet row, and sends no email. Afterwards, refund it in PayPal.</p>
+        <div id="paypal-mode" class="banner hidden"></div>
+        <div class="actions">
+            <button type="button" id="paypal-btn">Start $1 PayPal test</button>
+            <button type="button" id="paypal-reset-btn" class="secondary hidden">Start over</button>
+        </div>
+        <div id="paypal-error" class="banner bad hidden" role="alert"></div>
+        <div id="paypal-container"></div>
+        <div id="paypal-result" class="hidden"></div>
     </section>
 </main>
 
@@ -275,6 +288,93 @@
         } catch (error) {
             setBanner(testError, 'bad', error.message);
             testBtn.disabled = false;
+        }
+    });
+
+    const paypalBtn = document.getElementById('paypal-btn');
+    const paypalResetBtn = document.getElementById('paypal-reset-btn');
+    const paypalMode = document.getElementById('paypal-mode');
+    const paypalError = document.getElementById('paypal-error');
+    const paypalContainer = document.getElementById('paypal-container');
+    const paypalResult = document.getElementById('paypal-result');
+    let paypalButtons = null;
+
+    function resetPaypalTest() {
+        if (paypalButtons) {
+            paypalButtons.close();
+            paypalButtons = null;
+        }
+        paypalContainer.replaceChildren();
+        paypalResult.className = 'hidden';
+        paypalResult.replaceChildren();
+        paypalError.className = 'banner bad hidden';
+        paypalResetBtn.classList.add('hidden');
+        paypalBtn.disabled = false;
+    }
+    paypalResetBtn.addEventListener('click', resetPaypalTest);
+
+    function showPaypalResult(data) {
+        const live = data.mode === 'live';
+        const card = el('div', 'card');
+        card.appendChild(el('div', 'banner ok', `Paid: $${Number(data.amount).toFixed(2)} ${data.currency} in ${live ? 'LIVE' : 'SANDBOX'} mode.`));
+        card.appendChild(el('h3', '', 'PayPal transaction ID'));
+        card.appendChild(el('p')).appendChild(el('code', '', data.captureId || 'not returned'));
+        if (data.payerEmail) {
+            card.appendChild(el('h3', '', 'Paid by'));
+            card.appendChild(el('p', '', data.payerEmail));
+        }
+        card.appendChild(el('div', 'banner warn', live
+            ? 'Reminder: this was a real $1.00 charge. In PayPal, open Activity, find this transaction ID and refund it. PayPal may keep its processing fee on a refunded payment.'
+            : 'Reminder: this is a sandbox payment, so no real money moved. Refunding it is optional.'));
+        card.appendChild(el('p', 'muted', 'No registration, spreadsheet row or email was created.'));
+        paypalResult.replaceChildren(card);
+        paypalResult.className = '';
+    }
+
+    paypalBtn.addEventListener('click', async () => {
+        resetPaypalTest();
+        paypalBtn.disabled = true;
+        try {
+            if (!secretEl.value) throw new Error('Enter the admin secret first.');
+            const config = await fetch('/.netlify/functions/public-config').then((res) => res.json());
+            if (!config.paypalClientId) throw new Error('No PayPal client ID is configured on this deployment.');
+
+            const { mode } = await adminFetch('admin-test-paypal-order');
+            const live = mode === 'live';
+            setBanner(paypalMode, live ? 'bad' : 'ok', live
+                ? 'LIVE mode: this will charge $1.00 to the PayPal account you log in with.'
+                : 'SANDBOX mode: log in with a PayPal sandbox buyer account. No real money moves.');
+            if (live && !confirm('This is LIVE mode. A real $1.00 charge will be made to the PayPal account you log in with. Continue?')) {
+                paypalMode.className = 'banner hidden';
+                paypalBtn.disabled = false;
+                return;
+            }
+
+            await loadScriptOnce(`https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(config.paypalClientId)}&currency=USD`);
+            paypalButtons = paypal.Buttons({
+                createOrder: async () => (await adminFetch('admin-test-paypal-order', { method: 'POST' })).orderId,
+                onApprove: async (data) => {
+                    try {
+                        const result = await adminFetch('admin-test-paypal-capture', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ orderId: data.orderID })
+                        });
+                        if (!result.completed) throw new Error(`PayPal reports the payment as ${result.status}.`);
+                        paypalError.className = 'banner bad hidden';
+                        showPaypalResult(result);
+                    } catch (error) {
+                        setBanner(paypalError, 'bad', error.message);
+                    }
+                },
+                onCancel: () => setBanner(paypalError, 'warn', 'The PayPal window was closed before approving. Nothing was charged.'),
+                onError: (error) => setBanner(paypalError, 'bad', `PayPal error: ${error && error.message ? error.message : error}`)
+            });
+            paypalButtons.render('#paypal-container');
+            paypalResetBtn.classList.remove('hidden');
+        } catch (error) {
+            setBanner(paypalError, 'bad', error.message);
+            paypalBtn.disabled = false;
         }
     });
 </script>
