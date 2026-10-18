@@ -3,66 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CNIMA USA - Accordion Workshop in New Orleans. Learn from world-renowned master accordionists Jacques Mornet, Nathalie Boucheix, and more.">
-    <title>CNIMA USA - Accordion Workshop New Orleans 2026</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="description" content="CNIMA USA - Accordion Workshop in New Orleans, May 2027. Learn from world-renowned master accordionists Jacques Mornet, Nathalie Boucheix, and Franck Angélis.">
+    <title>CNIMA USA - Accordion Workshop New Orleans 2027</title>
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="CNIMA USA">
+    <meta property="og:title" content="CNIMA USA Accordion Workshop - New Orleans, May 2027">
+    <meta property="og:description" content="Two weeks of accordion study with Jacques Mornet, Nathalie Boucheix and Franck Angélis. Week 1: May 3–8. Week 2: May 10–15, 2027.">
+    <meta property="og:url" content="https://cnimausa.com/">
+    <meta property="og:image" content="https://cnimausa.com/assets/images/2027/og-share.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="CNIMA USA Accordion Workshop poster with Jacques Mornet and Nathalie Boucheix, New Orleans, May 3–8 and May 10–15, 2027.">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="styles-2027.css">
 </head>
 <body>
-            <!-- 
-                Hidden form for Netlify to detect at build time. 
-                AUTO-GENERATED from components/register.html - DO NOT EDIT MANUALLY 
-                Run: node scripts/generate-hidden-form.js 
-            --> 
-            <form name="registration" method="POST" netlify netlify-honeypot="bot-field" style="display: none;" action="/success.html"> 
-            <input type="hidden" name="form-name" value="registration" /> 
-                <input name="bot-field" /> 
-                <input type="hidden" name="subject" value="CNIMA USA New Registration (2026)" /> 
-                <input name="firstName" /> 
-                <input name="lastName" /> 
-                <input type="email" name="email" /> 
-                <input name="phone" /> 
-                <input name="address" /> 
-                <input name="city" /> 
-                <input name="state" /> 
-                <input name="postcode" /> 
-                <input name="country" /> 
-                <select name="skillLevel"> 
-                    <option value="beginner">beginner</option> 
-                    <option value="intermediate">intermediate</option> 
-                    <option value="advanced">advanced</option> 
-                    <option value="professional">professional</option> 
-                </select> 
-                <select name="workshop"> 
-                    <option value="workshop1">workshop1</option> 
-                    <option value="workshop2">workshop2</option> 
-                    <option value="both">both</option> 
-                </select> 
-                <select name="paymentOption"> 
-                    <option value="earlybird">earlybird</option> 
-                    <option value="full">full</option> 
-                </select> 
-                <select name="paymentMethod"> 
-                    <option value="zelle">zelle</option> 
-                    <option value="venmo">venmo</option> 
-                    <option value="paypal">paypal</option> 
-                </select> 
-                <input name="howDidYouHear" /> 
-                <textarea name="message"></textarea> 
-            </form>
-    
     <!-- 
-        Hidden mailing list form for Netlify to detect at build time.
-        This ensures Netlify can detect the form fields at build time.
-        Note: This form is hidden and only used for Netlify detection.
+        Hidden form for Netlify to detect at build time. 
+        AUTO-GENERATED from components/register.html - DO NOT EDIT MANUALLY 
+        Run: node scripts/generate-hidden-form.js 
+    --> 
+    <form name="registration" method="POST" netlify netlify-honeypot="bot-field" style="display: none;"> 
+    <input type="hidden" name="form-name" value="registration" /> 
+        <input name="bot-field" /> 
+        <input type="hidden" name="subject" value="CNIMA USA New Registration (2027)" /> 
+        <input type="hidden" name="registrationId" /> 
+        <input name="firstName" /> 
+        <input name="lastName" /> 
+        <input type="email" name="email" /> 
+        <input name="phone" /> 
+        <input name="address" /> 
+        <input name="city" /> 
+        <input name="state" /> 
+        <input name="postcode" /> 
+        <input name="country" /> 
+        <select name="skillLevel"> 
+            <option value="beginner">beginner</option> 
+            <option value="intermediate">intermediate</option> 
+            <option value="advanced">advanced</option> 
+            <option value="professional">professional</option> 
+        </select> 
+        <select name="workshop"> 
+            <option value="week1">week1</option> 
+            <option value="week2">week2</option> 
+            <option value="both">both</option> 
+        </select> 
+        <select name="paymentOption"> 
+            <option value="earlybird">earlybird</option> 
+            <option value="full">full</option> 
+            <option value="deposit">deposit</option> 
+        </select> 
+        <input name="depositAcknowledged" value="yes" /> 
+        <input name="howDidYouHear" /> 
+        <textarea name="message"></textarea> 
+    </form>
+
+    <!--
+        Hidden mailing list form for Netlify detection only - not for submission.
         The actual form submission comes from the visible form in contact.html
     -->
-    <!-- Hidden form for Netlify detection only - not for submission -->
     <form name="mailing-list-detection" method="POST" netlify netlify-honeypot="bot-field" style="display: none !important; position: absolute; left: -9999px; pointer-events: none;">
         <input type="hidden" name="form-name" value="mailing-list" />
         <input name="bot-field" />
         <input type="email" name="email" />
     </form>
-    
+
     <!-- Components will be loaded here -->
     <div id="nav-container"></div>
     <div id="hero-container"></div>
@@ -70,10 +75,11 @@
     <div id="teachers-container"></div>
     <div id="workshop-container"></div>
     <div id="register-container"></div>
+    <div id="share-container"></div>
     <div id="contact-container"></div>
     <div id="footer-container"></div>
 
     <script src="components/loader.js"></script>
-    <script src="script.js"></script>
+    <script src="registration-flow.js"></script>
 </body>
 </html>

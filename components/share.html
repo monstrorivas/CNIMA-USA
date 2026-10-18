@@ -1,0 +1,49 @@
+<!-- Share the workshop -->
+<section id="share" class="section share">
+    <div class="container">
+        <h2 class="section-title centered">Spread the Word</h2>
+        <div class="share-grid">
+            <a class="share-poster" href="assets/images/2027/cnima-2027-poster.png" target="_blank" rel="noopener" aria-label="Open the full-size poster in a new tab">
+                <img src="assets/images/2027/cnima-2027-poster-web.jpg" width="1000" height="1000" loading="lazy"
+                     alt="Poster: Learn to Play the Accordion with Jacques Mornet and Nathalie Boucheix at CNIMA USA. May 3&ndash;8 and May 10&ndash;15, 2027, Maison St. Charles, New Orleans. All ages, all levels, all styles, piano and button accordions.">
+            </a>
+            <div class="share-copy">
+                <h3>Know someone who should be there?</h3>
+                <p>Send them the link, or download the poster to print, post at your school or club, or share online.</p>
+                <div class="share-actions">
+                    <a class="btn btn-primary" href="assets/images/2027/cnima-2027-poster.png" download="CNIMA-USA-2027-Poster.png">Download poster</a>
+                    <button type="button" class="btn btn-ghost" id="share-link-btn">Share this page</button>
+                </div>
+                <p class="share-note" id="share-link-note" role="status" aria-live="polite"></p>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            var btn = document.getElementById('share-link-btn');
+            var note = document.getElementById('share-link-note');
+            if (!btn) return;
+            var original = note.textContent;
+            btn.addEventListener('click', function () {
+                var data = {
+                    title: 'CNIMA USA Accordion Workshop - New Orleans, May 2027',
+                    url: 'https://cnimausa.com/'
+                };
+                if (navigator.share) {
+                    navigator.share(data).catch(function () {});
+                    return;
+                }
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(data.url).then(function () {
+                        note.textContent = 'Link copied: ' + data.url;
+                        setTimeout(function () { note.textContent = original; }, 3500);
+                    }).catch(function () {
+                        note.textContent = 'Copy this link to share: ' + data.url;
+                    });
+                } else {
+                    note.textContent = 'Copy this link to share: ' + data.url;
+                }
+            });
+        })();
+    </script>
+</section>

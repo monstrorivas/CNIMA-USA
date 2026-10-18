@@ -1,0 +1,15 @@
+{
+  "name": "cnima-usa-website",
+  "private": true,
+  "version": "1.0.0",
+  "description": "CNIMA USA Accordion Workshop website - static site with Netlify Functions for registration payments (Stripe/PayPal) and the daily registrant export.",
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "stripe": "^17.4.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.38.0"
+  }
+}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Pay Your Balance - CNIMA USA</title>
+    <link rel="stylesheet" href="styles-2027.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="container">
+            <a href="/" class="logo">
+                <img src="assets/images/cnima-logo.jpg" alt="CNIMA USA" class="logo-img">
+            </a>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title centered">Pay Your Balance</h2>
+
+            <div id="balance-loading" class="payment-step hidden">
+                <p>Looking up your registration&hellip;</p>
+            </div>
+
+            <div id="balance-step" class="payment-step hidden">
+                <h3>Complete Your Payment</h3>
+                <p id="balance-name" class="balance-name"></p>
+                <p id="balance-workshop" class="balance-workshop"></p>
+                <p id="balance-amount" class="payment-amount"></p>
+                <p id="balance-note" class="balance-note"></p>
+                <div class="payment-methods">
+                    <div class="payment-method-card">
+                        <h4>Pay by Card or Wallet</h4>
+                        <div id="stripe-checkout-container"></div>
+                    </div>
+                    <div class="payment-methods-divider"><span>OR</span></div>
+                    <div class="payment-method-card">
+                        <h4>Pay with PayPal</h4>
+                        <div id="paypal-button-container"></div>
+                    </div>
+                </div>
+                <p id="payment-unavailable" class="payment-unavailable hidden">Online payment isn't available right now &mdash; please email <a href="mailto:registrations@cnimausa.com">registrations@cnimausa.com</a> and we'll help you pay.</p>
+                <p id="payment-error" class="registration-error hidden">Something went wrong completing that payment. Please try again, or email <a href="mailto:registrations@cnimausa.com">registrations@cnimausa.com</a>.</p>
+            </div>
+
+            <div id="balance-paid" class="form-success hidden">
+                <h3>You're Paid in Full!</h3>
+                <p id="balance-paid-message">Thank you &mdash; your balance is paid and your registration is confirmed. You should receive a confirmation email shortly.</p>
+            </div>
+
+            <p id="balance-error" class="registration-error hidden"></p>
+
+            <div id="balance-lookup" class="payment-step balance-lookup hidden">
+                <h3>Find My Registration</h3>
+                <p>Paid a deposit and lost your payment link? Enter the email address you registered with and we'll send the link to the address on file.</p>
+                <form id="balance-lookup-form">
+                    <input type="email" id="lookup-email" name="email" required placeholder="you@example.com" aria-label="Email address">
+                    <button type="submit" class="btn btn-primary" id="lookup-submit">Email My Link</button>
+                </form>
+                <p id="balance-lookup-done" class="balance-lookup-done hidden" role="status">If that address matches a registration with a balance due, we've sent the link there. Please check your inbox (and spam folder) in a few minutes.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2027 CNIMA USA. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="registration-flow.js"></script>
+    <script src="pay-balance.js"></script>
+</body>
+</html>

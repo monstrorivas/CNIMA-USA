@@ -1,0 +1,1241 @@
+/* CNIMA USA - 2027 Teaser Styles
+   One continuous deep-navy canvas (New Orleans after dark) rather than
+   equal-weight color stripes. Gold is the one primary interactive color;
+   red is used sparingly, as a single deliberate accent, not a whole
+   section. No pastels. */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #0E2A3F;
+    --bg-elevated: #163B54;
+    --bg-deep: #081A28;
+    --gold: #F3B120;
+    --gold-deep: #C2851E;
+    --red: #CF2330;
+    --red-deep: #A81C26;
+    --cream: #F7F1E3;
+    --muted: rgba(247, 241, 227, 0.72);
+    --white: #FFFFFF;
+    --text-dark: #12262B;
+    --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.7;
+    color: var(--cream);
+    background-color: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+a {
+    color: var(--gold);
+}
+
+/* Nav */
+.nav {
+    padding: 1.5rem 0;
+}
+
+.nav .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    background: var(--white);
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 10px;
+}
+
+.logo-img {
+    height: 44px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.75rem 1.5rem;
+}
+
+.nav-links a {
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--cream);
+    border-bottom: 2px solid var(--red);
+    padding-bottom: 2px;
+    white-space: nowrap;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+}
+
+/* Buttons - default styling assumes a light (cream/white) surface */
+.btn {
+    display: inline-block;
+    padding: 0.9rem 1.8rem;
+    border-radius: 999px;
+    font-weight: 800;
+    text-decoration: none;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: var(--red);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--red-deep);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--gold);
+    border-color: var(--gold);
+}
+
+.btn-ghost:hover {
+    background: rgba(243, 177, 32, 0.15);
+}
+
+/* Hero */
+/* The group photo as a black-and-white band behind the hero. It is the same
+   file the About section uses, so it downloads once. The photo and its
+   navy overlay are separate layers because the grayscale filter would also
+   drain the color out of an overlay stacked on the same element. */
+.hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 4rem 0 4.5rem;
+    text-align: center;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background: url('assets/images/2027/cnima-students.jpg') center 35% / cover no-repeat;
+    filter: grayscale(1) contrast(1.05);
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(to bottom, rgba(14, 42, 63, 0.86) 0%, rgba(14, 42, 63, 0.82) 60%, var(--bg) 100%);
+}
+
+.hero-container {
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.hero-eyebrow {
+    display: inline-block;
+    background: transparent;
+    color: var(--gold);
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding-bottom: 0.35rem;
+    border-bottom: 2px solid var(--gold);
+    margin-bottom: 1.5rem;
+}
+
+.hero-title {
+    font-size: 2.75rem;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    color: var(--white);
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+}
+
+/* One card per workshop, each listing who teaches it, so the guest teacher
+   appears only inside Workshop 2's card. */
+.hero-workshops {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    max-width: 560px;
+    margin: 0 auto 2rem;
+    text-align: left;
+}
+
+.hero-workshop {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid rgba(243, 177, 32, 0.4);
+    border-radius: 12px;
+    background: rgba(14, 42, 63, 0.92);
+}
+
+.hero-workshop-label {
+    color: var(--gold);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.hero-workshop-dates {
+    color: var(--white);
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+}
+
+.hero-teacher {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* The name inherits .hero-teacher's size, color and weight, so it matches
+   Jacques and Nathalie exactly; only the layout differs, to hold the tag. */
+.hero-guest {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.hero-guest-tag {
+    color: var(--gold);
+    border: 1px solid rgba(243, 177, 32, 0.45);
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.4;
+    padding: 0.05rem 0.5rem;
+    border-radius: 999px;
+}
+
+.hero-description {
+    font-size: 1.05rem;
+    margin: 0 auto 2rem;
+    max-width: 46ch;
+    color: rgba(247, 241, 227, 0.92);
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* Primary button on the dark hero needs gold, not red (red barely
+   shows up against this background - checked contrast: ~1.8:1). */
+.hero .btn-primary {
+    background: var(--gold);
+    color: var(--text-dark);
+}
+
+.hero .btn-primary:hover {
+    background: var(--gold-deep);
+}
+
+/* Dates */
+.dates-section {
+    padding: 3rem 0 4rem;
+    text-align: center;
+}
+
+.dates-section h2 {
+    color: var(--white);
+    margin-bottom: 0.5rem;
+}
+
+.dates-lead {
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+}
+
+.dates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(220px, 320px));
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.ticket {
+    background: var(--bg-elevated);
+    border: 3px solid var(--gold);
+    border-radius: 16px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: var(--shadow);
+}
+
+.ticket-red {
+    border-color: var(--red);
+}
+
+.ticket-label {
+    display: inline-block;
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: var(--gold);
+    color: var(--text-dark);
+}
+
+.ticket-red .ticket-label {
+    background: var(--red);
+    color: var(--white);
+}
+
+.ticket-dates {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--white);
+}
+
+.dates-footnote {
+    margin-top: 2rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+/* Photo band */
+.photo-band {
+    position: relative;
+    background: url('/assets/images/jacques-format-paysage.jpg') center/cover no-repeat;
+    padding: 5rem 0;
+}
+
+.photo-band-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(14, 42, 63, 0.8);
+}
+
+.photo-band .container {
+    position: relative;
+    z-index: 2;
+}
+
+.photo-band-quote {
+    font-size: 1.4rem;
+    font-style: italic;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+    color: var(--cream);
+}
+
+/* Signup */
+.signup-section {
+    background: var(--bg-elevated);
+    padding: 4.5rem 0 5rem;
+}
+
+.signup-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.signup-card {
+    background: var(--cream);
+    color: var(--text-dark);
+    border: 3px solid var(--gold);
+    border-radius: 20px;
+    padding: 2.5rem;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.signup-card h2 {
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.signup-card .lead {
+    color: rgba(18, 38, 43, 0.75);
+}
+
+.mailing-list-input-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1.25rem;
+}
+
+.mailing-list-input-group input[type="email"] {
+    flex: 1;
+    min-width: 220px;
+    padding: 0.85rem 1.1rem;
+    border-radius: 999px;
+    border: 2px solid var(--bg);
+    font-size: 1rem;
+    font-family: inherit;
+    background: var(--white);
+}
+
+.mailing-list-input-group input[type="email"]:focus {
+    outline: 2px solid var(--red-deep);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Generic section scaffolding, used by About/Teachers/Workshop/Register/Contact */
+.section {
+    padding: 4rem 0;
+}
+
+.section-elevated {
+    background: var(--bg-elevated);
+}
+
+.section-title {
+    color: var(--white);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.section-title.centered {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.section-subtitle {
+    text-align: center;
+    max-width: 60ch;
+    margin: 0 auto 2.5rem;
+    color: var(--muted);
+}
+
+/* About: the group photo beside the text, shown whole (it's a crowd, so
+   cropping would cut off faces) in the same cream and gold frame as the
+   other cards. */
+.about-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: center;
+}
+
+.about-photo-frame {
+    background: var(--cream);
+    border: 3px solid var(--gold);
+    border-radius: 16px;
+    padding: 0.75rem;
+    box-shadow: var(--shadow);
+}
+
+.about-photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.about-copy .lead {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--cream);
+    margin-bottom: 1rem;
+}
+
+.about-copy p {
+    color: var(--muted);
+    margin-bottom: 1rem;
+}
+
+.about-copy a {
+    color: var(--gold);
+    font-weight: 700;
+}
+
+/* Cream focal cards, shared recipe for teacher bios and workshop details */
+.teachers-grid,
+.workshop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.teacher-bio,
+.workshop-card {
+    background: var(--cream);
+    color: var(--text-dark);
+    border: 3px solid var(--gold);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.teacher-photo {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 1rem;
+    border: 4px solid var(--gold);
+}
+
+.teacher-bio h3 {
+    text-align: center;
+    color: var(--red-deep);
+    margin-bottom: 1rem;
+}
+
+.teacher-bio p {
+    color: rgba(18, 38, 43, 0.85);
+    margin-bottom: 0.75rem;
+}
+
+.workshop-card h3 {
+    color: var(--red-deep);
+    margin-bottom: 1rem;
+}
+
+.workshop-card p {
+    margin-bottom: 0.5rem;
+}
+
+.workshop-card ul {
+    padding-left: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.workshop-card li {
+    margin-bottom: 0.4rem;
+}
+
+.workshop-card a:not(.btn) {
+    color: var(--red-deep);
+}
+
+.workshop-card-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: block;
+}
+
+/* Share block: the poster is shown as a framed print (same cream and gold
+   recipe as the other cards) so its cream edge never sits bare against the
+   navy page. It points back to this site, so it lives near the bottom, away
+   from the hero and the registration form. */
+.share-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+    gap: 3rem;
+    align-items: center;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.share-poster {
+    display: block;
+    background: var(--cream);
+    border: 3px solid var(--gold);
+    border-radius: 16px;
+    padding: 0.75rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.15s ease;
+}
+
+.share-poster:hover {
+    transform: translateY(-3px);
+}
+
+.share-poster img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.share-copy h3 {
+    color: var(--white);
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.share-copy p {
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+}
+
+.share-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Red barely reads on the navy page, so the primary action is gold here
+   too, same as in the hero. */
+.share .btn-primary {
+    background: var(--gold);
+    color: var(--text-dark);
+}
+
+.share .btn-primary:hover {
+    background: var(--gold-deep);
+}
+
+.share-copy .share-note {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+/* Registration form */
+.registration-form {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+}
+
+.form-group label {
+    display: block;
+    color: var(--cream);
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 2px solid var(--bg-elevated);
+    background: var(--white);
+    color: var(--text-dark);
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: 2px solid var(--gold);
+    border-color: var(--gold);
+}
+
+.btn-large {
+    width: 100%;
+    padding: 1.1rem;
+    font-size: 1.05rem;
+}
+
+.registration-error {
+    color: var(--red);
+    background: rgba(207, 35, 48, 0.12);
+    border: 1px solid var(--red);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.registration-error a {
+    color: var(--red);
+    text-decoration: underline;
+}
+
+/* Inline payment step + success state */
+.payment-step,
+.form-success {
+    max-width: 680px;
+    margin: 2rem auto 0;
+    background: var(--cream);
+    color: var(--text-dark);
+    border: 3px solid var(--gold);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.payment-step h3,
+.form-success h3 {
+    color: var(--red-deep);
+    margin-bottom: 0.75rem;
+}
+
+.payment-amount {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--red-deep);
+    margin-bottom: 1.5rem;
+}
+
+.payment-methods {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: left;
+}
+
+.payment-method-card {
+    background: var(--white);
+    border: 2px solid var(--bg-elevated);
+    border-radius: 12px;
+    padding: 1.25rem;
+}
+
+.payment-method-card h4 {
+    margin-bottom: 0.75rem;
+    color: var(--text-dark);
+}
+
+.payment-methods-divider {
+    position: relative;
+    text-align: center;
+    margin: -0.75rem 0;
+}
+
+.payment-methods-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--bg-elevated);
+}
+
+.payment-methods-divider span {
+    position: relative;
+    background: var(--cream);
+    padding: 0 1rem;
+    font-weight: 700;
+    color: rgba(18, 38, 43, 0.6);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+}
+
+.payment-unavailable {
+    margin-top: 1.5rem;
+    font-style: italic;
+    color: rgba(18, 38, 43, 0.8);
+}
+
+/* Deposit option: what it costs and the non-refundable acknowledgment */
+.deposit-terms {
+    background: rgba(243, 177, 32, 0.1);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.deposit-terms p {
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.checkbox-label input {
+    flex-shrink: 0;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.3rem;
+    accent-color: var(--gold);
+}
+
+.balance-link-note {
+    text-align: center;
+    margin-top: 2rem;
+    color: var(--muted);
+}
+
+/* Pay-balance page */
+.balance-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.balance-workshop {
+    margin-bottom: 1rem;
+}
+
+.balance-note {
+    font-size: 0.95rem;
+    color: rgba(18, 38, 43, 0.8);
+    margin: -0.75rem 0 1.5rem;
+}
+
+.balance-lookup p {
+    color: rgba(18, 38, 43, 0.8);
+}
+
+.balance-lookup form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.balance-lookup input[type="email"] {
+    flex: 1 1 220px;
+    min-width: 0;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 2px solid var(--bg-elevated);
+    font: inherit;
+}
+
+.balance-lookup input[type="email"]:focus {
+    outline: 2px solid var(--gold);
+    border-color: var(--gold);
+}
+
+.balance-lookup .balance-lookup-done {
+    margin-top: 1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+/* Contact */
+.contact-intro {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.contact-email {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 1rem 0 0;
+}
+
+/* The mailing list card on Contact and the YouTube card on Testimonials share
+   one look: a quiet outlined card with a gold action. */
+.contact-cards {
+    max-width: 440px;
+    margin: 0 auto;
+}
+
+.contact-card,
+.more-videos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.75rem 1.5rem;
+    border: 1px solid rgba(243, 177, 32, 0.4);
+    border-radius: 16px;
+    background: rgba(247, 241, 227, 0.05);
+}
+
+.contact-card h3,
+.more-videos h3 {
+    color: var(--white);
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.contact-card p,
+.more-videos p {
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+}
+
+/* Red barely reads against the navy page, so both card actions use the
+   same gold as the hero's. */
+.contact-card .btn-primary,
+.more-videos .btn-primary {
+    background: var(--gold);
+    color: var(--text-dark);
+}
+
+.contact-card .btn-primary:hover,
+.more-videos .btn-primary:hover {
+    background: var(--gold-deep);
+}
+
+.contact-card > .btn,
+.more-videos > .btn,
+.contact-card > .mailing-list-form {
+    margin-top: auto;
+}
+
+/* A link and a <button> start with different font sizes, so set both the
+   same to keep the two actions visually matched. */
+.contact-card .btn,
+.more-videos .btn {
+    font: inherit;
+    font-weight: 800;
+    padding: 0.75rem 1.5rem;
+}
+
+.contact-card .mailing-list-form {
+    width: 100%;
+}
+
+.contact-card .mailing-list-input-group {
+    flex-wrap: nowrap;
+    margin-top: 0;
+}
+
+.contact-card .mailing-list-input-group input[type="email"] {
+    min-width: 0;
+}
+
+.mailing-list h3 {
+    margin-bottom: 0.5rem;
+}
+
+.mailing-list-success {
+    color: var(--gold);
+    font-weight: 700;
+    margin-top: 1rem;
+}
+
+.links {
+    margin-top: 1.5rem;
+}
+
+.contact-links {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Testimonials: vertical phone videos (YouTube Shorts) in the same cream and
+   gold frame as the other cards, caption inside the frame under the video.
+   Each starts as a local poster image; the YouTube player only loads when
+   someone presses play, so the page makes no third-party requests until then. */
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0 3rem;
+}
+
+.testimonial-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--cream);
+    color: var(--text-dark);
+    border: 3px solid var(--gold);
+    border-radius: 16px;
+    padding: 0.5rem;
+    box-shadow: var(--shadow);
+}
+
+.testimonial-video {
+    position: relative;
+    display: block;
+    aspect-ratio: 9 / 16;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-deep);
+}
+
+.testimonial-video img,
+.testimonial-video iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    object-fit: cover;
+}
+
+.testimonial-play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(14, 42, 63, 0.22);
+    transition: background-color 0.15s ease;
+}
+
+.testimonial-play::before {
+    content: "";
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    transition: transform 0.15s ease;
+}
+
+.testimonial-play::after {
+    content: "";
+    position: absolute;
+    border-style: solid;
+    border-width: 0.6rem 0 0.6rem 1rem;
+    border-color: transparent transparent transparent var(--text-dark);
+    transform: translateX(0.12rem);
+}
+
+.testimonial-video:hover .testimonial-play,
+.testimonial-video:focus-visible .testimonial-play {
+    background: rgba(14, 42, 63, 0.05);
+}
+
+.testimonial-video:hover .testimonial-play::before,
+.testimonial-video:focus-visible .testimonial-play::before {
+    transform: scale(1.08);
+}
+
+.testimonial-video:focus-visible {
+    outline: 3px solid var(--red-deep);
+    outline-offset: 2px;
+}
+
+.testimonial-caption {
+    padding: 0.7rem 0.5rem 0.4rem;
+}
+
+.testimonial-name {
+    font-weight: 800;
+    color: var(--red-deep);
+    line-height: 1.3;
+}
+
+.testimonial-place {
+    font-size: 0.9rem;
+    color: rgba(18, 38, 43, 0.75);
+    line-height: 1.4;
+}
+
+.more-videos {
+    max-width: 480px;
+    margin: 0 auto 3rem;
+}
+
+.testimonials-cta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    padding-bottom: 4rem;
+}
+
+/* Archive hub */
+.archive-hero {
+    padding: 3.5rem 0 3rem;
+    text-align: center;
+}
+
+.archive-hero h1 {
+    color: var(--white);
+}
+
+.archive-hero .lead {
+    max-width: 55ch;
+    margin: 0.75rem auto 0;
+    color: var(--muted);
+}
+
+.archive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0 5rem;
+}
+
+.archive-card {
+    background: var(--cream);
+    color: var(--text-dark);
+    border: 3px solid var(--gold);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+.archive-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.archive-card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.archive-card-body h3 {
+    color: var(--text-dark);
+}
+
+.archive-card-body p {
+    color: rgba(18, 38, 43, 0.75);
+}
+
+.archive-card-body .btn {
+    align-self: flex-start;
+    margin-top: auto;
+}
+
+/* Footer */
+.footer {
+    background: var(--bg-deep);
+    color: var(--muted);
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.footer a {
+    color: var(--gold);
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.1rem;
+    }
+
+    .dates-grid {
+        grid-template-columns: minmax(220px, 320px);
+    }
+
+    .nav .container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        justify-content: center;
+    }
+
+    .about-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2rem;
+    }
+
+    .share-grid {
+        grid-template-columns: minmax(0, 420px);
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    .share-copy {
+        text-align: center;
+    }
+
+    .share-actions {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 760px) {
+    .testimonials-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .testimonial-caption {
+        padding: 0.6rem 0.35rem 0.3rem;
+    }
+
+    .testimonial-name {
+        font-size: 0.95rem;
+    }
+
+    .testimonial-place {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .hero-workshops {
+        grid-template-columns: minmax(0, 1fr);
+        max-width: 360px;
+    }
+}
+
+@media (max-width: 480px) {
+    .signup-card {
+        padding: 1.75rem;
+    }
+
+    .mailing-list-input-group,
+    .contact-card .mailing-list-input-group {
+        flex-direction: column;
+    }
+
+    .payment-step,
+    .form-success {
+        padding: 1.75rem;
+    }
+}

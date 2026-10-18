@@ -1,12 +1,29 @@
 [build]
   publish = "."
   command = "node scripts/generate-hidden-form.js"
+  functions = "netlify/functions"
+
+[[headers]]
+  for = "/admin-test.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/archive/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
   force = false
+
+# Daily at 15:00 UTC (9 or 10am in New Orleans). The function itself decides
+# whether today is a reminder day (30, 7 or 2 days before February 1, 2027).
+[functions."send-balance-reminders"]
+  schedule = "0 15 * * *"
 
 [build.environment]
   NODE_VERSION = "18"
@@ -18,4 +35,14 @@
 [[forms.notifications]]
   form = "mailing-list"
   email = "cnimausa@gmail.com"
+
+# Note: these declarative notifications don't appear to be what actually
+# drives Netlify's Form notifications - the real ones (confirmed working,
+# predating this project) are configured directly in the dashboard (Site
+# settings -> Forms -> Form notifications). Treat this block as a record of
+# intent, not the live configuration. A second "registration" notification
+# isn't added here at all - that one goes out via Resend's cc in
+# netlify/functions/_shared/notify-payment-complete.js instead, specifically
+# because it must only fire on confirmed payment, not on submission (a
+# dashboard notification for this form would fire on submission alone).
 
