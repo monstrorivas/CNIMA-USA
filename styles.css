@@ -134,7 +134,7 @@ h1, h2, h3, .section-title, .hero-title, .hero-subtitle {
     justify-content: center;
     background: linear-gradient(135deg, var(--yellow-soft) 0%, #fff 50%, var(--yellow-soft) 100%);
     background-size: cover;
-    background-position: center;
+    background-position: center top;
     background-attachment: fixed;
     background-repeat: no-repeat;
     color: var(--primary-color);
@@ -350,6 +350,20 @@ h1, h2, h3, .section-title, .hero-title, .hero-subtitle {
 
 #workshop .section-bg-overlay {
     background: linear-gradient(135deg, rgba(255, 249, 230, 0.65) 0%, rgba(255, 255, 255, 0.7) 50%, rgba(255, 249, 230, 0.65) 100%);
+}
+
+#register.section-with-bg {
+    background-attachment: scroll;
+    background-position: top center;
+}
+
+#register .section-bg-overlay {
+    background: linear-gradient(135deg, rgba(255, 249, 230, 0.85) 0%, rgba(255, 255, 255, 0.2) 30%, rgba(255, 249, 230, 0.85) 100%);
+}
+
+#register .section-subtitle {
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 .section-bg-overlay {
